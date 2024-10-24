@@ -8,9 +8,11 @@ import {
 	TFile
 } from "obsidian";
 import RelationalLinksPlugin from "../main";
+import {noop} from "@babel/types";
 
 export class RelationalTagSuggestor extends EditorSuggest<string> {
 	plugin: RelationalLinksPlugin;
+	tabHandler: (event: KeyboardEvent) => void = noop;
 
 	constructor(app: App, plugin: RelationalLinksPlugin) {
 		super(app);
@@ -19,20 +21,40 @@ export class RelationalTagSuggestor extends EditorSuggest<string> {
 
 	onTrigger(cursor: EditorPosition, editor: Editor, file: TFile): EditorSuggestTriggerInfo | null {
 		const lineBeforeCursor = editor.getLine(cursor.line).substr(0, cursor.ch);
-		if (lineBeforeCursor.endsWith("#[")) {
+
+		// Check if the trigger is "#[" and trigger autocomplete
+		const match = lineBeforeCursor.match(/#\[(.*)$/);
+		if (match) {
 			return {
-				start: { line: cursor.line, ch: cursor.ch - 2 },
-				end: cursor,
-				query: "",
+				start: { line: cursor.line, ch: cursor.ch - match[0].length },  // Start position for the suggestion
+				end: cursor,  // End position
+				query: match[1],  // Extract the typed characters after #[ for filtering
 			};
 		}
 		return null;
 	}
 
 	getSuggestions(context: EditorSuggestContext): string[] {
-		return Array.from(this.plugin.relationalTags).filter(option =>
+		const suggestions = Array.from(this.plugin.relationalTags).filter(option =>
 			option.toLowerCase().includes(context.query.toLowerCase())
 		);
+
+		// In case there is an existing handler, remove it.
+		window.removeEventListener('keydown', this.tabHandler);
+
+		// Create a new handler using the suggestions.
+		this.tabHandler = (event: KeyboardEvent) => {
+			if (event.key === "Tab") {
+				event.preventDefault();
+				const suggestion = suggestions[0];
+				if (suggestion) {
+					this.selectSuggestion(suggestion, event);
+				}
+			}
+		}
+		window.addEventListener('keydown', this.tabHandler);
+
+		return suggestions;
 	}
 
 	renderSuggestion(suggestion: string, el: HTMLElement): void {
@@ -64,5 +86,13 @@ export class RelationalTagSuggestor extends EditorSuggest<string> {
 			const newCursorPosition = { line: cursor.line, ch: cursor.ch + 1 }
 			editor.setCursor(newCursorPosition);
 		}
+	}
+
+	close(): void {
+		if (this.tabHandler) {
+			window.removeEventListener('keydown', this.tabHandler);
+			this.tabHandler = noop;
+		}
+		super.close();
 	}
 }
