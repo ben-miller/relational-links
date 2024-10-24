@@ -2,22 +2,29 @@ import {Plugin} from "obsidian";
 import MarkdownIt from "markdown-it";
 import {getAllTokens, relationalLinksMarkdownPlugin} from "./lib/relationalLinksMarkdownPlugin";
 import {RelationalTagSuggestor} from "./lib/relationalTagSuggestor";
+import {RelationalLinkSuggestor} from "./lib/relationalLinkSuggestor";
 
 const md = MarkdownIt()
 md.use(relationalLinksMarkdownPlugin)
 
 export default class RelationalLinksPlugin extends Plugin {
 	public relationalTagSuggestor: RelationalTagSuggestor | null = null;
+	public relationalLinkSuggestor: RelationalLinkSuggestor | null = null;
 	public relationalTags: Set<string> = new Set();
 
 	loadSuggestors() {
 		this.relationalTagSuggestor = new RelationalTagSuggestor(this.app, this);
 		this.registerEditorSuggest(this.relationalTagSuggestor);
+		this.relationalLinkSuggestor = new RelationalLinkSuggestor(this.app, this);
+		this.registerEditorSuggest(this.relationalLinkSuggestor);
 	}
 
 	unloadSuggestors() {
 		if (this.relationalTagSuggestor) {
 			this.relationalTagSuggestor = null;
+		}
+		if (this.relationalLinkSuggestor) {
+			this.relationalLinkSuggestor = null;
 		}
 	}
 
