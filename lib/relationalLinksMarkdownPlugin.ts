@@ -33,9 +33,20 @@ export function relationalLinksMarkdownPlugin(md: MarkdownIt) {
 
 		if (!silent) {
 			const token = state.push("relational_link", "", 0);
-			token.content = label;
-			token.meta = { path };
 			token.markup = fullMatch;
+
+			// Create child tokens for both label and path
+			token.children = [];
+
+			// Child token for the relationship type (label)
+			const labelToken = state.push("relational_link_label", "", 0);
+			labelToken.content = label;
+			token.children.push(labelToken);
+
+			// Child token for the path
+			const pathToken = state.push("relational_link_path", "", 0);
+			pathToken.content = path;
+			token.children.push(pathToken);
 		}
 
 		state.pos += fullMatch.length;
@@ -44,20 +55,4 @@ export function relationalLinksMarkdownPlugin(md: MarkdownIt) {
 
 	// Register the inline rule for the relational links
 	md.inline.ruler.before("link", "relational_link", parseRelationalLink);
-
-	// Define how to render the token into HTML (or any other desired format)
-	md.renderer.rules["relational_link"] = function (
-		tokens: Token[],
-		idx: number,
-		options,
-		env,
-		self
-	) {
-		const token = tokens[idx];
-		const label = md.utils.escapeHtml(token.content);
-		const meta = token.meta as { path: string };
-		const path = md.utils.escapeHtml(meta.path);
-
-		return `<a class="relational-link" href="${path}">${label}</a>`;
-	};
 }
