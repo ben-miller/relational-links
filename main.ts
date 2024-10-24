@@ -1,4 +1,4 @@
-import {Plugin} from "obsidian";
+import {Plugin, TFile} from "obsidian";
 import MarkdownIt from "markdown-it";
 import {getAllTokens, relationalLinksMarkdownPlugin} from "./lib/relationalLinksMarkdownPlugin";
 import {RelationalTagSuggestor} from "./lib/relationalTagSuggestor";
@@ -36,16 +36,20 @@ export default class RelationalLinksPlugin extends Plugin {
 		}
 	}
 
+	async getTagsInFile(file: TFile): Promise<string[]> {
+		const content = await this.app.vault.read(file);
+		const tokens = md.parse(content, {});
+		return getAllTokens(tokens)
+			.filter((token) => token.type === 'relational_link')
+			.map((token) => token.children![0].content);
+	}
+
 	async loadAllTags() {
 		const markdownFiles = this.app.vault.getMarkdownFiles();
 		for (const file of markdownFiles) {
-			const content = await this.app.vault.read(file);
-			const tokens = md.parse(content, {});
-			getAllTokens(tokens)
-				.filter((token) => token.type === 'relational_link')
-				.forEach((token) => {
-					this.relationalTags.add(token.children![0].content);
-				});
+			this.getTagsInFile(file).then(tags => tags.forEach((tag) => {
+				this.relationalTags.add(tag);
+			}))
 		}
 	}
 
