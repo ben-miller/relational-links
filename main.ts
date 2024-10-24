@@ -12,6 +12,14 @@ export default class RelationalLinksPlugin extends Plugin {
 	public relationalLinkSuggestor: RelationalLinkSuggestor | null = null;
 	public relationalTags: Set<string> = new Set();
 
+	async onload() {
+		console.log('Loading plugin...');
+		this.loadSuggestors();
+		await this.loadAllTags();
+		await this.initParserEvents();
+		console.log('Plugin loaded.');
+	}
+
 	loadSuggestors() {
 		this.relationalTagSuggestor = new RelationalTagSuggestor(this.app, this);
 		this.registerEditorSuggest(this.relationalTagSuggestor);
@@ -28,8 +36,7 @@ export default class RelationalLinksPlugin extends Plugin {
 		}
 	}
 
-	async onload() {
-		console.log('Loading plugin...');
+	async loadAllTags() {
 		const markdownFiles = this.app.vault.getMarkdownFiles();
 		for (const file of markdownFiles) {
 			const content = await this.app.vault.read(file);
@@ -37,10 +44,12 @@ export default class RelationalLinksPlugin extends Plugin {
 			getAllTokens(tokens)
 				.filter((token) => token.type === 'relational_link')
 				.forEach((token) => {
-				this.relationalTags.add(token.children![0].content);
-			});
+					this.relationalTags.add(token.children![0].content);
+				});
 		}
+	}
 
+	async initParserEvents() {
 		this.registerEvent(this.app.vault.on("create", (file) => {
 			console.log(`File created: ${file.path}`);
 		}));
@@ -56,9 +65,6 @@ export default class RelationalLinksPlugin extends Plugin {
 		this.registerEvent(this.app.vault.on("rename", (file, oldPath) => {
 			console.log(`File renamed from ${oldPath} to ${file.path}`);
 		}));
-
-		this.loadSuggestors();
-		console.log('Plugin loaded.');
 	}
 
 	async onunload() {
