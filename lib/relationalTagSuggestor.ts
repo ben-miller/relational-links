@@ -23,8 +23,12 @@ export class RelationalTagSuggestor extends EditorSuggest<string> {
 		const lineBeforeCursor = editor.getLine(cursor.line).substr(0, cursor.ch);
 
 		// Check if the trigger is "#[" and trigger autocomplete
-		const match = lineBeforeCursor.match(/#\[(.*)$/);
+		const match = lineBeforeCursor.match(/#\[(.*)$/)
 		if (match) {
+			const secondMatch = lineBeforeCursor.match(/#\[(.*)\[$/);
+			if (secondMatch) {
+				return null;
+			}
 			return {
 				start: { line: cursor.line, ch: cursor.ch - match[0].length },  // Start position for the suggestion
 				end: cursor,  // End position
