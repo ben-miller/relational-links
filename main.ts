@@ -1,4 +1,4 @@
-import {Plugin, TFile} from "obsidian";
+import {Plugin, TAbstractFile, TFile} from "obsidian";
 import MarkdownIt from "markdown-it";
 import {getAllTokens, relationalLinksMarkdownPlugin} from "./lib/relationalLinksMarkdownPlugin";
 import {RelationalTagSuggestor} from "./lib/relationalTagSuggestor";
@@ -36,37 +36,34 @@ export default class RelationalLinksPlugin extends Plugin {
 		}
 	}
 
-	async getTagsInFile(file: TFile): Promise<string[]> {
+	async loadTagsInFile(file: TFile) {
 		const content = await this.app.vault.read(file);
 		const tokens = md.parse(content, {});
-		return getAllTokens(tokens)
+		await getAllTokens(tokens).then((tokens) => tokens
 			.filter((token) => token.type === 'relational_link')
-			.map((token) => token.children![0].content);
+			.forEach((token) => {
+				const tag = token.children![0].content;
+				this.relationalTags.add(tag);
+			})
+		)
 	}
 
 	async loadAllTags() {
 		const markdownFiles = this.app.vault.getMarkdownFiles();
 		for (const file of markdownFiles) {
-			this.getTagsInFile(file).then(tags => tags.forEach((tag) => {
-				this.relationalTags.add(tag);
-			}))
+			await this.loadTagsInFile(file);
 		}
 	}
 
 	async initParserEvents() {
-		this.registerEvent(this.app.vault.on("create", (file) => {
-			console.log(`File created: ${file.path}`);
+		this.registerEvent(this.app.vault.on("modify", async (file: TAbstractFile) => {
+			if (file instanceof TFile) {
+				await this.loadTagsInFile(file);
+			}
 		}));
 
-		this.registerEvent(this.app.vault.on("modify", (file) => {
-			console.log(`File modified: ${file.path}`);
-		}));
-
-		this.registerEvent(this.app.vault.on("delete", (file) => {
-			console.log(`File deleted: ${file.path}`);
-		}));
-
-		this.registerEvent(this.app.vault.on("rename", (file, oldPath) => {
+		this.registerEvent(this.app.vault.on("rename", async (file: TAbstractFile, oldPath) => {
+			// TODO Update relational links pointing to this file.
 			console.log(`File renamed from ${oldPath} to ${file.path}`);
 		}));
 	}
