@@ -1,6 +1,17 @@
 import MarkdownIt from "markdown-it";
 import { StateInline, Token } from "markdown-it";
 
+export function getAllTokens(tokens: Token[]): Token[] {
+	let allTokens: Token[] = [];
+	for (const token of tokens) {
+		allTokens.push(token);
+		if (token.children && token.children.length > 0) {
+			allTokens = allTokens.concat(getAllTokens(token.children));
+		}
+	}
+	return allTokens;
+}
+
 export function relationalLinksMarkdownPlugin(md: MarkdownIt) {
 	function parseRelationalLink(state: StateInline, silent: boolean): boolean {
 		const start = state.pos;

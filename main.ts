@@ -1,21 +1,9 @@
 import { Plugin } from "obsidian";
 import MarkdownIt, {Token} from "markdown-it";
-import {relationalLinksMarkdownPlugin} from "./lib/relationalLinksMarkdownPlugin";
+import {getAllTokens, relationalLinksMarkdownPlugin} from "./lib/relationalLinksMarkdownPlugin";
 
 const md = MarkdownIt()
 md.use(relationalLinksMarkdownPlugin)
-
-// Recursive function to collect all tokens, with proper type annotations
-export function getAllTokens(tokens: Token[]): Token[] {
-	let allTokens: Token[] = [];
-	for (const token of tokens) {
-		allTokens.push(token);
-		if (token.children && token.children.length > 0) {
-			allTokens = allTokens.concat(getAllTokens(token.children));
-		}
-	}
-	return allTokens;
-}
 
 export default class RelationalLinksPlugin extends Plugin {
 	async onload() {

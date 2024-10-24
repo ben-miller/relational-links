@@ -1,6 +1,5 @@
 import MarkdownIt from "markdown-it";
-import {relationalLinksMarkdownPlugin} from "./relationalLinksMarkdownPlugin";
-import {getAllTokens} from "../main";
+import {getAllTokens, relationalLinksMarkdownPlugin} from "./relationalLinksMarkdownPlugin";
 
 const md = new MarkdownIt();
 md.use(relationalLinksMarkdownPlugin);
