@@ -6,7 +6,8 @@
 	"scripts": {
 		"dev": "node esbuild.config.mjs",
 		"build": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production",
-		"version": "node version-bump.mjs && git add manifest.json versions.json"
+		"version": "node version-bump.mjs && git add manifest.json versions.json",
+		"vault:test": "npx tsx lib/relationalMarkdownTest.ts"
 	},
 	"keywords": [],
 	"author": "",
@@ -20,5 +21,9 @@
 		"obsidian": "latest",
 		"tslib": "2.4.0",
 		"typescript": "4.7.4"
+	},
+	"dependencies": {
+		"@types/markdown-it": "^14.1.2",
+		"markdown-it": "^14.1.0"
 	}
 }
