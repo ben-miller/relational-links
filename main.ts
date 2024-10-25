@@ -5,7 +5,7 @@ import {RelationalTagSuggestor} from "./lib/relationalTagSuggestor";
 import {RelationalLinkSuggestor} from "./lib/relationalLinkSuggestor";
 import {rlMarkdownPostProcessor} from "./lib/rlMarkdownPostProcessor";
 import {rlSidebarViewId, RLSidebarView} from "./lib/RLSidebarView";
-import {attachTagListeners, detachTagListeners} from "./lib/rlTagListeners";
+import {RLTags} from "./lib/RLTags";
 
 const md = MarkdownIt()
 md.use(rlMarkdownPlugin)
@@ -15,6 +15,7 @@ export default class RelationalLinksPlugin extends Plugin {
 	public relationalLinkSuggestor: RelationalLinkSuggestor | null = null;
 	public relationalTags: Set<string> = new Set();
 	private currentActiveLeaf: WorkspaceLeaf | null = null;
+	private rlTags: RLTags = new RLTags(this);
 
 	loadSuggestors() {
 		this.relationalTagSuggestor = new RelationalTagSuggestor(this.app, this);
@@ -79,23 +80,32 @@ export default class RelationalLinksPlugin extends Plugin {
 		this.addRibbonIcon("star", "Relational Links Explorer", () => {
 			console.log("clicked")
 		});
+	}
 
-		this.app.workspace.detachLeavesOfType(rlSidebarViewId);
+	public async openLeftSidebarView(tag = "") {
+		console.log("opening sidebar view with tag:", tag);
 
-		const leftLeaf = this.app.workspace.getLeftLeaf(false);
-		if (leftLeaf) {
-			await leftLeaf.setViewState({
-				type: rlSidebarViewId,
-			});
+		// Check if the sidebar view is already open
+		const existingLeaf = this.app.workspace.getLeavesOfType(rlSidebarViewId)[0];
+
+		if (!existingLeaf) {
+			// Sidebar view is not open, so open it
+			const leftLeaf = this.app.workspace.getLeftLeaf(false);
+			if (leftLeaf) {
+				await leftLeaf.setViewState({ type: rlSidebarViewId });
+			}
+		} else {
+			// If the sidebar is already open, you could bring it into focus
+			this.app.workspace.revealLeaf(existingLeaf);
 		}
 	}
 
 	attachListeners(leaf: WorkspaceLeaf) {
-		attachTagListeners(leaf.view.containerEl);
+		this.rlTags.attachTagListeners(leaf.view.containerEl);
 	}
 
 	detachListeners(leaf: WorkspaceLeaf) {
-		detachTagListeners(leaf.view.containerEl);
+		this.rlTags.detachTagListeners(leaf.view.containerEl);
 	}
 
 	handleActiveLeafChange(leaf: WorkspaceLeaf | null) {
@@ -129,6 +139,7 @@ export default class RelationalLinksPlugin extends Plugin {
 		await this.initParserEvents();
 		await this.initMarkdownPostProcessor();
 		await this.initLeftSidebarView();
+		await this.openLeftSidebarView();
 		await this.initLeafChangeEvents();
 		console.log('Plugin loaded.');
 	}
