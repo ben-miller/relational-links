@@ -9,11 +9,7 @@ import {
 } from "obsidian";
 import RelationalLinksPlugin from "../main";
 
-const relationalLinks = [
-	"link0", "link1", "link2"
-];
-
-export class RelationalLinkSuggestor extends EditorSuggest<string> {
+export class RelationalLinkSuggestor extends EditorSuggest<TFile> {
 	plugin: RelationalLinksPlugin;
 
 	constructor(app: App, plugin: RelationalLinksPlugin) {
@@ -24,30 +20,32 @@ export class RelationalLinkSuggestor extends EditorSuggest<string> {
 	onTrigger(cursor: EditorPosition, editor: Editor, file: TFile): EditorSuggestTriggerInfo | null {
 		const lineBeforeCursor = editor.getLine(cursor.line).substr(0, cursor.ch);
 		if (/#\[.*\[$/.test(lineBeforeCursor)) {
-			const triggerInfo = {
-				start: { line: cursor.line, ch: cursor.ch - 2 },
+			return {
+				start: {line: cursor.line, ch: cursor.ch - 2},
 				end: cursor,
 				query: "",
-			};
-			return triggerInfo
+			}
 		}
 		return null;
 	}
 
-	// Return the list of suggestions
-	getSuggestions(context: EditorSuggestContext): string[] {
-		return relationalLinks.filter(option =>
-			option.toLowerCase().includes(context.query.toLowerCase()) // Filter based on user input
-		);
+	getSuggestions(context: EditorSuggestContext): TFile[] {
+		return this.plugin.app.vault.getFiles().filter(file =>
+			file.name.toLowerCase().includes(context.query.toLowerCase())
+		)
 	}
 
-	// What happens when a suggestion is selected
-	renderSuggestion(suggestion: string, el: HTMLElement): void {
-		el.createEl("div", { text: suggestion });
+	renderSuggestion(suggestion: TFile, el: HTMLElement): void {
+		const suggestionEl = el.createEl("div", { cls: "suggestion-content" });
+
+		const fileNameEl = suggestionEl.createEl("div", { cls: "suggestion-title" });
+		fileNameEl.setText(suggestion.basename);
+
+		const filePathEl = suggestionEl.createEl("small", { cls: "suggestion-note" });
+		filePathEl.setText(suggestion.path);
 	}
 
-	// When the user selects a suggestion, insert it into the editor
-	selectSuggestion(suggestion: string, evt: MouseEvent | KeyboardEvent): void {
+	selectSuggestion(suggestion: TFile, evt: MouseEvent | KeyboardEvent): void {
 		if (!this.context) {
 			console.log("No context available for autocomplete");
 			return;
@@ -55,10 +53,10 @@ export class RelationalLinkSuggestor extends EditorSuggest<string> {
 		const { editor, start, end } = this.context;
 		if (editor) {
 			// Replace text with suggestion
-			editor.replaceRange(suggestion, { line: start.line, ch: start.ch + 2 }, { line: end.line, ch: end.ch });
+			editor.replaceRange(suggestion.path, { line: start.line, ch: start.ch + 2 }, { line: end.line, ch: end.ch });
 
 			// Move cursor to end
-			editor.setCursor({ line: end.line, ch: end.ch + suggestion.length + 2 });
+			editor.setCursor({ line: end.line, ch: end.ch + suggestion.path.length + 2 });
 
 			// Close popup
 			this.close()
