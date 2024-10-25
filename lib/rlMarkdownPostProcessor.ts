@@ -4,7 +4,7 @@ export function rlMarkdownPostProcessor(element: HTMLElement, context: MarkdownP
 	element.querySelectorAll("p").forEach((p) => {
 		p.innerHTML = p.innerHTML.replace(/#\[([a-zA-Z0-9._:-]+)\[(.*?)\]\]/g, (match, tag, linkPath) => {
 			const file = this.app.vault.getAbstractFileByPath(linkPath);
-			const tagLink = `<a href="#${tag}" class="tag" target="_blank" rel="noopener nofollow">${tag}</a>`;
+			const tagLink = `<a href="#${tag}" class="relational-links-tag" target="_blank" rel="noopener nofollow">${tag}</a>`;
 			let pathLink = "";
 			if (file && file instanceof TFile) {
 				const basename = file.basename;

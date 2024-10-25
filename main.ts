@@ -1,4 +1,4 @@
-import {Plugin, TAbstractFile, TFile} from "obsidian";
+import {Plugin, TAbstractFile, TFile, WorkspaceLeaf} from "obsidian";
 import MarkdownIt from "markdown-it";
 import {getAllTokens, rlMarkdownPlugin} from "./lib/rlMarkdownPlugin";
 import {RelationalTagSuggestor} from "./lib/relationalTagSuggestor";
@@ -13,6 +13,8 @@ export default class RelationalLinksPlugin extends Plugin {
 	public relationalTagSuggestor: RelationalTagSuggestor | null = null;
 	public relationalLinkSuggestor: RelationalLinkSuggestor | null = null;
 	public relationalTags: Set<string> = new Set();
+	private currentActiveLeaf: WorkspaceLeaf | null = null;
+	private listenerMap: WeakMap<HTMLElement, EventListener> = new WeakMap();
 
 	loadSuggestors() {
 		this.relationalTagSuggestor = new RelationalTagSuggestor(this.app, this);
@@ -88,6 +90,43 @@ export default class RelationalLinksPlugin extends Plugin {
 		}
 	}
 
+	attachListeners(leaf: WorkspaceLeaf) {
+		document.querySelectorAll('.relational-links-tag').forEach((element: HTMLElement) => {
+			const listener = (event: Event) => {
+				const tag = (event.target as HTMLElement).getAttribute("href")?.substring(1);
+				console.log("TAG CLICKED:", tag);
+			};
+
+			element.addEventListener('click', listener);
+			this.listenerMap.set(element, listener);
+		});
+	}
+
+	detachListeners(leaf: WorkspaceLeaf) {
+		document.querySelectorAll('.relational-links-tag').forEach((element: HTMLElement) => {
+			const listener = this.listenerMap.get(element);
+			if (listener) {
+				element.removeEventListener('click', listener);
+				this.listenerMap.delete(element);
+			}
+		});
+	}
+
+	handleActiveLeafChange(leaf: WorkspaceLeaf | null) {
+		// If there's a previously active leaf, detach its listeners
+		if (this.currentActiveLeaf) {
+			this.detachListeners(this.currentActiveLeaf);
+		}
+
+		// Set the new active leaf
+		this.currentActiveLeaf = leaf;
+
+		// Attach listeners to the new active leaf if it exists
+		if (leaf) {
+			this.attachListeners(leaf);
+		}
+	}
+
 	async onload() {
 		console.log('Loading plugin...');
 		this.loadSuggestors();
@@ -95,6 +134,14 @@ export default class RelationalLinksPlugin extends Plugin {
 		await this.initParserEvents();
 		await this.initMarkdownPostProcessor();
 		await this.initLeftSidebarView();
+
+		this.registerEvent(
+			this.app.workspace.on('active-leaf-change', (leaf) => {
+				this.handleActiveLeafChange(leaf);
+			})
+		);
+		this.handleActiveLeafChange(this.app.workspace.getLeaf());
+
 		console.log('Plugin loaded.');
 	}
 
