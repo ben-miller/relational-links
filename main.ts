@@ -1,9 +1,8 @@
-import {MarkdownPostProcessorContext, normalizePath, Plugin, TAbstractFile, TFile} from "obsidian";
+import {MarkdownPostProcessorContext, Plugin, TAbstractFile, TFile} from "obsidian";
 import MarkdownIt from "markdown-it";
 import {getAllTokens, relationalLinksMarkdownPlugin} from "./lib/relationalLinksMarkdownPlugin";
 import {RelationalTagSuggestor} from "./lib/relationalTagSuggestor";
 import {RelationalLinkSuggestor} from "./lib/relationalLinkSuggestor";
-import path from "node:path";
 
 const md = MarkdownIt()
 md.use(relationalLinksMarkdownPlugin)
