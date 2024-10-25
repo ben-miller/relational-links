@@ -1,15 +1,8 @@
-import {
-	App,
-	Editor,
-	EditorPosition,
-	EditorSuggest,
-	EditorSuggestContext,
-	EditorSuggestTriggerInfo,
-	TFile
-} from "obsidian";
+import {App, Editor, EditorPosition, EditorSuggestContext, EditorSuggestTriggerInfo, TFile} from "obsidian";
 import RelationalLinksPlugin from "../main";
+import {RLEditorSuggest} from "./RLEditorSuggest";
 
-export class RelationalLinkSuggestor extends EditorSuggest<TFile> {
+export class RelationalLinkSuggestor extends RLEditorSuggest<TFile> {
 	plugin: RelationalLinksPlugin;
 
 	constructor(app: App, plugin: RelationalLinksPlugin) {
@@ -31,10 +24,12 @@ export class RelationalLinkSuggestor extends EditorSuggest<TFile> {
 	}
 
 	getSuggestions(context: EditorSuggestContext): TFile[] {
-		return this.plugin.app.vault.getFiles().filter(file =>
+		const suggestions = this.plugin.app.vault.getFiles().filter(file =>
 			file.extension === "md" &&
 			file.name.toLowerCase().includes(context.query.toLowerCase())
 		)
+		this.initHandler(suggestions);
+		return suggestions;
 	}
 
 	renderSuggestion(suggestion: TFile, el: HTMLElement): void {

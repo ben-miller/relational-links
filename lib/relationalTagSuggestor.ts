@@ -1,18 +1,9 @@
-import {
-	App,
-	Editor,
-	EditorPosition,
-	EditorSuggest,
-	EditorSuggestContext,
-	EditorSuggestTriggerInfo,
-	TFile
-} from "obsidian";
+import {App, Editor, EditorPosition, EditorSuggestContext, EditorSuggestTriggerInfo, TFile} from "obsidian";
 import RelationalLinksPlugin from "../main";
-import {noop} from "@babel/types";
+import {RLEditorSuggest} from "./RLEditorSuggest";
 
-export class RelationalTagSuggestor extends EditorSuggest<string> {
+export class RelationalTagSuggestor extends RLEditorSuggest<string> {
 	plugin: RelationalLinksPlugin;
-	tabHandler: (event: KeyboardEvent) => void = noop;
 
 	constructor(app: App, plugin: RelationalLinksPlugin) {
 		super(app);
@@ -40,22 +31,7 @@ export class RelationalTagSuggestor extends EditorSuggest<string> {
 		const suggestions = Array.from(this.plugin.relationalTags).filter(option =>
 			option.toLowerCase().includes(context.query.toLowerCase())
 		);
-
-		// In case there is an existing handler, remove it.
-		window.removeEventListener('keydown', this.tabHandler);
-
-		// Create a new handler using the suggestions.
-		this.tabHandler = (event: KeyboardEvent) => {
-			if (event.key === "Tab") {
-				event.preventDefault();
-				const suggestion = suggestions[0];
-				if (suggestion) {
-					this.selectSuggestion(suggestion, event);
-				}
-			}
-		}
-		window.addEventListener('keydown', this.tabHandler);
-
+		this.initHandler(suggestions);
 		return suggestions;
 	}
 
@@ -88,13 +64,5 @@ export class RelationalTagSuggestor extends EditorSuggest<string> {
 			const newCursorPosition = { line: cursor.line, ch: cursor.ch + 1 }
 			editor.setCursor(newCursorPosition);
 		}
-	}
-
-	close(): void {
-		if (this.tabHandler) {
-			window.removeEventListener('keydown', this.tabHandler);
-			this.tabHandler = noop;
-		}
-		super.close();
 	}
 }
