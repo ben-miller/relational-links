@@ -1,6 +1,6 @@
 import {ItemView, WorkspaceLeaf} from "obsidian";
 
-export const relationalLinksSidebarView = "relational-links-sidebar-view";
+export const rlSidebarViewId = "relational-links-sidebar-view";
 
 export class RLSidebarView extends ItemView {
 	constructor(leaf: WorkspaceLeaf) {
@@ -9,7 +9,7 @@ export class RLSidebarView extends ItemView {
 
 	// Unique identifier for the view type
 	getViewType() {
-		return relationalLinksSidebarView;
+		return rlSidebarViewId;
 	}
 
 	// Display name for the view in the Left Sidebar
