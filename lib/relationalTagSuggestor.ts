@@ -21,18 +21,16 @@ export class RelationalTagSuggestor extends EditorSuggest<string> {
 
 	onTrigger(cursor: EditorPosition, editor: Editor, file: TFile): EditorSuggestTriggerInfo | null {
 		const lineBeforeCursor = editor.getLine(cursor.line).substr(0, cursor.ch);
-
-		// Check if the trigger is "#[" and trigger autocomplete
-		const match = lineBeforeCursor.match(/#\[(.*)$/)
+		const match = lineBeforeCursor.match(/#\[(.*)/)
 		if (match) {
-			const secondMatch = lineBeforeCursor.match(/#\[(.*)\[$/);
+			const secondMatch = lineBeforeCursor.match(/#\[(.*)\[.*/);
 			if (secondMatch) {
 				return null;
 			}
 			return {
-				start: { line: cursor.line, ch: cursor.ch - match[0].length },  // Start position for the suggestion
-				end: cursor,  // End position
-				query: match[1],  // Extract the typed characters after #[ for filtering
+				start: { line: cursor.line, ch: cursor.ch - match[0].length },
+				end: cursor,
+				query: match[1],
 			};
 		}
 		return null;

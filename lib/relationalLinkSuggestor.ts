@@ -19,11 +19,12 @@ export class RelationalLinkSuggestor extends EditorSuggest<TFile> {
 
 	onTrigger(cursor: EditorPosition, editor: Editor, file: TFile): EditorSuggestTriggerInfo | null {
 		const lineBeforeCursor = editor.getLine(cursor.line).substr(0, cursor.ch);
-		if (/#\[.*\[$/.test(lineBeforeCursor)) {
+		const match = lineBeforeCursor.match(/#\[[a-zA-Z0-9._:-]*?\[(.*)/);
+		if (match) {
 			return {
-				start: {line: cursor.line, ch: cursor.ch - 2},
+				start: {line: cursor.line, ch: cursor.ch - match[0].length},
 				end: cursor,
-				query: "",
+				query: match[1]
 			}
 		}
 		return null;
