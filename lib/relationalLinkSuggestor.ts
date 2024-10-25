@@ -32,6 +32,7 @@ export class RelationalLinkSuggestor extends EditorSuggest<TFile> {
 
 	getSuggestions(context: EditorSuggestContext): TFile[] {
 		return this.plugin.app.vault.getFiles().filter(file =>
+			file.extension === "md" &&
 			file.name.toLowerCase().includes(context.query.toLowerCase())
 		)
 	}
