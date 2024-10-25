@@ -5,6 +5,7 @@ import {RelationalTagSuggestor} from "./lib/relationalTagSuggestor";
 import {RelationalLinkSuggestor} from "./lib/relationalLinkSuggestor";
 import {rlMarkdownPostProcessor} from "./lib/rlMarkdownPostProcessor";
 import {rlSidebarViewId, RLSidebarView} from "./lib/RLSidebarView";
+import {attachTagListeners, detachTagListeners} from "./lib/rlTagListeners";
 
 const md = MarkdownIt()
 md.use(rlMarkdownPlugin)
@@ -14,7 +15,6 @@ export default class RelationalLinksPlugin extends Plugin {
 	public relationalLinkSuggestor: RelationalLinkSuggestor | null = null;
 	public relationalTags: Set<string> = new Set();
 	private currentActiveLeaf: WorkspaceLeaf | null = null;
-	private listenerMap: WeakMap<HTMLElement, EventListener> = new WeakMap();
 
 	loadSuggestors() {
 		this.relationalTagSuggestor = new RelationalTagSuggestor(this.app, this);
@@ -91,25 +91,11 @@ export default class RelationalLinksPlugin extends Plugin {
 	}
 
 	attachListeners(leaf: WorkspaceLeaf) {
-		document.querySelectorAll('.relational-links-tag').forEach((element: HTMLElement) => {
-			const listener = (event: Event) => {
-				const tag = (event.target as HTMLElement).getAttribute("href")?.substring(1);
-				console.log("TAG CLICKED:", tag);
-			};
-
-			element.addEventListener('click', listener);
-			this.listenerMap.set(element, listener);
-		});
+		attachTagListeners(leaf.view.containerEl);
 	}
 
 	detachListeners(leaf: WorkspaceLeaf) {
-		document.querySelectorAll('.relational-links-tag').forEach((element: HTMLElement) => {
-			const listener = this.listenerMap.get(element);
-			if (listener) {
-				element.removeEventListener('click', listener);
-				this.listenerMap.delete(element);
-			}
-		});
+		detachTagListeners(leaf.view.containerEl);
 	}
 
 	handleActiveLeafChange(leaf: WorkspaceLeaf | null) {
@@ -127,6 +113,15 @@ export default class RelationalLinksPlugin extends Plugin {
 		}
 	}
 
+	async initLeafChangeEvents() {
+		this.registerEvent(
+			this.app.workspace.on('active-leaf-change', (leaf) => {
+				this.handleActiveLeafChange(leaf);
+			})
+		);
+		this.handleActiveLeafChange(this.app.workspace.getLeaf());
+	}
+
 	async onload() {
 		console.log('Loading plugin...');
 		this.loadSuggestors();
@@ -134,14 +129,7 @@ export default class RelationalLinksPlugin extends Plugin {
 		await this.initParserEvents();
 		await this.initMarkdownPostProcessor();
 		await this.initLeftSidebarView();
-
-		this.registerEvent(
-			this.app.workspace.on('active-leaf-change', (leaf) => {
-				this.handleActiveLeafChange(leaf);
-			})
-		);
-		this.handleActiveLeafChange(this.app.workspace.getLeaf());
-
+		await this.initLeafChangeEvents();
 		console.log('Plugin loaded.');
 	}
 
