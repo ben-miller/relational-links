@@ -1,5 +1,5 @@
 import MarkdownIt from "markdown-it";
-import {getAllTokens, relationalLinksMarkdownPlugin} from "./relationalLinksMarkdownPlugin";
+import {getAllTokens, rlMarkdownPlugin} from "./rlMarkdownPlugin";
 
 const markdownText = `
 This is a note referencing another note:
@@ -14,7 +14,7 @@ describe("Relational Links Markdown Plugin", () => {
 
 	beforeEach(() => {
 		md = new MarkdownIt();
-		md.use(relationalLinksMarkdownPlugin);
+		md.use(rlMarkdownPlugin);
 	});
 
 	it("should parse relational link tokens correctly", () => {

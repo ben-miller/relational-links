@@ -1,13 +1,13 @@
 import {Plugin, TAbstractFile, TFile} from "obsidian";
 import MarkdownIt from "markdown-it";
-import {getAllTokens, relationalLinksMarkdownPlugin} from "./lib/relationalLinksMarkdownPlugin";
+import {getAllTokens, rlMarkdownPlugin} from "./lib/rlMarkdownPlugin";
 import {RelationalTagSuggestor} from "./lib/relationalTagSuggestor";
 import {RelationalLinkSuggestor} from "./lib/relationalLinkSuggestor";
-import {rlMarkdownPostProcessor} from "./lib/markdownPostProcessor";
+import {rlMarkdownPostProcessor} from "./lib/rlMarkdownPostProcessor";
 import {relationalLinksSidebarView, RLSidebarView} from "./lib/RLSidebarView";
 
 const md = MarkdownIt()
-md.use(relationalLinksMarkdownPlugin)
+md.use(rlMarkdownPlugin)
 
 export default class RelationalLinksPlugin extends Plugin {
 	public relationalTagSuggestor: RelationalTagSuggestor | null = null;

@@ -12,7 +12,7 @@ export async function getAllTokens(tokens: Token[]): Promise<Token[]> {
 	return allTokens;
 }
 
-export function relationalLinksMarkdownPlugin(md: MarkdownIt) {
+export function rlMarkdownPlugin(md: MarkdownIt) {
 	function parseRelationalLink(state: StateInline, silent: boolean): boolean {
 		const start = state.pos;
 		const src = state.src.slice(start);
