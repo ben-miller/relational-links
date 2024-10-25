@@ -12,14 +12,6 @@ export default class RelationalLinksPlugin extends Plugin {
 	public relationalLinkSuggestor: RelationalLinkSuggestor | null = null;
 	public relationalTags: Set<string> = new Set();
 
-	async onload() {
-		console.log('Loading plugin...');
-		this.loadSuggestors();
-		await this.loadAllTags();
-		await this.initParserEvents();
-		console.log('Plugin loaded.');
-	}
-
 	loadSuggestors() {
 		this.relationalTagSuggestor = new RelationalTagSuggestor(this.app, this);
 		this.registerEditorSuggest(this.relationalTagSuggestor);
@@ -66,6 +58,14 @@ export default class RelationalLinksPlugin extends Plugin {
 			// TODO Update relational links pointing to this file.
 			console.log(`File renamed from ${oldPath} to ${file.path}`);
 		}));
+	}
+
+	async onload() {
+		console.log('Loading plugin...');
+		this.loadSuggestors();
+		await this.loadAllTags();
+		await this.initParserEvents();
+		console.log('Plugin loaded.');
 	}
 
 	async onunload() {
