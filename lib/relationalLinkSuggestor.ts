@@ -22,7 +22,7 @@ export class RelationalLinkSuggestor extends EditorSuggest<TFile> {
 		const match = lineBeforeCursor.match(/#\[[a-zA-Z0-9._:-]*?\[(.*)/);
 		if (match) {
 			return {
-				start: {line: cursor.line, ch: cursor.ch - match[0].length},
+				start: {line: cursor.line, ch: cursor.ch - 2 - match[1].length },
 				end: cursor,
 				query: match[1]
 			}
