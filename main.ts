@@ -4,6 +4,7 @@ import {getAllTokens, relationalLinksMarkdownPlugin} from "./lib/relationalLinks
 import {RelationalTagSuggestor} from "./lib/relationalTagSuggestor";
 import {RelationalLinkSuggestor} from "./lib/relationalLinkSuggestor";
 import {rlMarkdownPostProcessor} from "./lib/markdownPostProcessor";
+import {relationalLinksSidebarView, RLSidebarView} from "./lib/RLSidebarView";
 
 const md = MarkdownIt()
 md.use(relationalLinksMarkdownPlugin)
@@ -65,17 +66,41 @@ export default class RelationalLinksPlugin extends Plugin {
 		this.registerMarkdownPostProcessor(rlMarkdownPostProcessor);
 	}
 
+	async initLeftSidebarView() {
+		// Register the sidebar view when the plugin loads
+		this.registerView(
+			relationalLinksSidebarView,
+			(leaf) => new RLSidebarView(leaf)
+		);
+
+		// Add a ribbon icon to toggle the view
+		this.addRibbonIcon("star", "Relational Links Explorer", () => {
+			console.log("clicked")
+		});
+
+		this.app.workspace.detachLeavesOfType(relationalLinksSidebarView);
+
+		const leftLeaf = this.app.workspace.getLeftLeaf(false);
+		if (leftLeaf) {
+			await leftLeaf.setViewState({
+				type: relationalLinksSidebarView,
+			});
+		}
+	}
+
 	async onload() {
 		console.log('Loading plugin...');
 		this.loadSuggestors();
 		await this.loadAllTags();
 		await this.initParserEvents();
 		await this.initMarkdownPostProcessor();
+		await this.initLeftSidebarView();
 		console.log('Plugin loaded.');
 	}
 
 	async onunload() {
 		console.log('Unloading plugin...');
 		this.unloadSuggestors();
+		this.app.workspace.detachLeavesOfType(relationalLinksSidebarView);
 	}
 }
