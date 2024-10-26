@@ -1,5 +1,5 @@
 import {TFile, Vault} from "obsidian";
-import {getAllTokens, rlMarkdownPlugin} from "./rlMarkdownPlugin";
+import {getAllTokens, rlMarkdownPlugin} from "./markdown-it/rlMarkdownPlugin";
 import {RLPluginState} from "./RLPluginState";
 import MarkdownIt from "markdown-it";
 

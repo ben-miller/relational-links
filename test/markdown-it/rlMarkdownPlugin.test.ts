@@ -1,5 +1,5 @@
 import MarkdownIt from "markdown-it";
-import {getAllTokens, rlMarkdownPlugin} from "./rlMarkdownPlugin";
+import {getAllTokens, rlMarkdownPlugin} from "../../lib/markdown-it/rlMarkdownPlugin";
 
 const markdownText = `
 This is a note referencing another note:
