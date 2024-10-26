@@ -9,8 +9,8 @@ import {VaultScanner} from "./lib/VaultScanner";
 export default class RelationalLinksPlugin extends Plugin {
 	public relationalTagSuggest: RelationalTagSuggest | null = null;
 	public relationalLinkSuggest: RelationalLinkSuggest | null = null;
-	private rlEditorController: RLEditorController = new RLEditorController(this);
 	private state: RLPluginState = new RLPluginState();
+	private rlEditorController: RLEditorController = new RLEditorController(this);
 	private vaultScanner: VaultScanner | null = null;
 
 	loadEditorSuggests() {
@@ -29,13 +29,10 @@ export default class RelationalLinksPlugin extends Plugin {
 		}
 	}
 
-	async initParserEvents() {
-		this.vaultScanner = new VaultScanner(this.app.vault, this.state);
-		await this.vaultScanner.loadAllTags();
-
+	async initParserEvents(vaultScanner: VaultScanner) {
 		this.registerEvent(this.app.vault.on("modify", async (file: TAbstractFile) => {
 			if (file instanceof TFile) {
-				await this.vaultScanner!.loadTagsInFile(file);
+				await vaultScanner.loadTagsInFile(file);
 			}
 		}));
 
@@ -50,17 +47,19 @@ export default class RelationalLinksPlugin extends Plugin {
 		this.registerMarkdownPostProcessor(markdownPostProcessor);
 	}
 
-	async initLeftSidebarView() {
+	async initLeftSidebarView(vaultScanner: VaultScanner) {
 		// Register the sidebar view when the plugin loads
 		this.registerView(
 			rlSidebarViewId,
-			(leaf) => new RLTagExplorerView(leaf, this.state)
+			(leaf) => new RLTagExplorerView(leaf, this.state, vaultScanner)
 		);
 
 		// Add a ribbon icon to toggle the view
 		this.addRibbonIcon("star", "Relational Links Explorer", () => {
 			console.log("clicked")
 		});
+
+		await this.openLeftSidebarView();
 	}
 
 	public async openLeftSidebarView(tag = "") {
@@ -117,10 +116,11 @@ export default class RelationalLinksPlugin extends Plugin {
 	async onload() {
 		console.log('Loading plugin...');
 		this.loadEditorSuggests();
-		await this.initParserEvents();
+		this.vaultScanner = new VaultScanner(this.app.vault, this.state);
+		await this.vaultScanner.loadAllTags();
+		await this.initParserEvents(this.vaultScanner);
 		await this.initMarkdownPostProcessor();
-		await this.initLeftSidebarView();
-		await this.openLeftSidebarView();
+		await this.initLeftSidebarView(this.vaultScanner);
 		await this.initLeafChangeEvents();
 		console.log('Plugin loaded.');
 	}

@@ -6,6 +6,13 @@ import MarkdownIt from "markdown-it";
 const md = MarkdownIt()
 md.use(rlMarkdownPlugin)
 
+export interface TagSearchResult {
+	title: string;
+	path: string;
+	tag: string;
+	url?: string;
+}
+
 export class VaultScanner {
 	constructor(
 		private vault: Vault,
@@ -29,5 +36,16 @@ export class VaultScanner {
 		for (const file of markdownFiles) {
 			await this.loadTagsInFile(file);
 		}
+	}
+
+	public async searchTag(tag: string): Promise<TagSearchResult[]> {
+		const dummyResults = [
+			{ title: "Accountant", path: "/path/to/accountant.md", tag: "#ProfessionalOccupation" },
+			{ title: "Apothecary", path: "/path/to/apothecary.md", tag: "#ProfessionalOccupation", url: "https://www.wikiwand.com/en/articles/apothecary" },
+			{ title: "Concept Artist", path: "/path/to/concept_artist.md", tag: "#ProfessionalOccupation" },
+			{ title: "Graphic Designer", path: "/path/to/graphic_designer.md", tag: "#ProfessionalOccupation" },
+			{ title: "IP Attorney", path: "/path/to/ip_attorney.md", tag: "#ProfessionalOccupation" },
+		];
+		return dummyResults;
 	}
 }

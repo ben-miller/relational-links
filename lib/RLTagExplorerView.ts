@@ -1,10 +1,15 @@
 import {ItemView, WorkspaceLeaf} from "obsidian";
 import {RLPluginState} from "./RLPluginState";
+import {VaultScanner} from "./VaultScanner";
 
 export const rlSidebarViewId = "relational-links-sidebar-view";
 
 export class RLTagExplorerView extends ItemView {
-	constructor(leaf: WorkspaceLeaf, private state: RLPluginState) {
+	constructor(
+		leaf: WorkspaceLeaf,
+		private state: RLPluginState,
+		private vaultScanner: VaultScanner
+	) {
 		super(leaf);
 	}
 
@@ -34,18 +39,11 @@ export class RLTagExplorerView extends ItemView {
 		container.createEl("h1", { text: "Relational Links Explorer" });
 
 		// Dummy data for search results
-		const dummyResults = [
-			{ title: "Accountant", path: "/path/to/accountant.md", tag: "#ProfessionalOccupation" },
-			{ title: "Apothecary", path: "/path/to/apothecary.md", tag: "#ProfessionalOccupation", url: "https://www.wikiwand.com/en/articles/apothecary" },
-			{ title: "Concept Artist", path: "/path/to/concept_artist.md", tag: "#ProfessionalOccupation" },
-			{ title: "Graphic Designer", path: "/path/to/graphic_designer.md", tag: "#ProfessionalOccupation" },
-			{ title: "IP Attorney", path: "/path/to/ip_attorney.md", tag: "#ProfessionalOccupation" },
-		];
-
 		// Main container to hold all search results
 		const resultsContainer = container.createEl("div", { cls: "search-results-children" });
 
-		dummyResults.forEach(result => {
+		const searchResults = await this.vaultScanner.searchTag(this.state.searchTag);
+		searchResults.forEach(result => {
 			// Result item container
 			const resultItem = resultsContainer.createEl("div", { cls: "tree-item search-result", attr: { draggable: "true" } });
 
