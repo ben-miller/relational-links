@@ -32,7 +32,7 @@ export class VaultScanner {
 		)
 	}
 
-	async loadAllTags() {
+	async scanVault() {
 		const markdownFiles = this.vault.getMarkdownFiles();
 		for (const file of markdownFiles) {
 			await this.loadTagsInFile(file);

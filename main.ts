@@ -117,7 +117,7 @@ export default class RelationalLinksPlugin extends Plugin {
 		console.log('Loading plugin...');
 		this.loadEditorSuggests();
 		this.vaultScanner = new VaultScanner(this.app.vault, this.state);
-		await this.vaultScanner.loadAllTags();
+		await this.vaultScanner.scanVault();
 		await this.initParserEvents(this.vaultScanner);
 		await this.initMarkdownPostProcessor();
 		await this.initLeftSidebarView(this.vaultScanner);
