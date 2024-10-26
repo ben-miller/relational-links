@@ -17,11 +17,11 @@ describe("Relational Links Markdown Plugin", () => {
 		md.use(rlMarkdownPlugin);
 	});
 
-	it("should parse relational link tokens correctly", () => {
+	it("should parse relational link tokens correctly", async () => {
 
 		// Parse the markdown text
 		const tokens = md.parse(markdownText, {});
-		const allTokens = getAllTokens(tokens);
+		const allTokens = await getAllTokens(tokens);
 
 		// Filter out relational_link tokens
 		const relationalTokens = allTokens.filter(
