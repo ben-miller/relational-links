@@ -4,7 +4,7 @@ import {getAllTokens, rlMarkdownPlugin} from "./lib/rlMarkdownPlugin";
 import {RelationalTagSuggestor} from "./lib/relationalTagSuggestor";
 import {RelationalLinkSuggestor} from "./lib/relationalLinkSuggestor";
 import {rlMarkdownPostProcessor} from "./lib/rlMarkdownPostProcessor";
-import {rlSidebarViewId, RLSidebarView} from "./lib/RLSidebarView";
+import {rlSidebarViewId, RLTagExplorerView} from "./lib/RLTagExplorerView";
 import {RLTags} from "./lib/RLTags";
 import {RLPluginState} from "./lib/RLPluginState";
 
@@ -75,7 +75,7 @@ export default class RelationalLinksPlugin extends Plugin {
 		// Register the sidebar view when the plugin loads
 		this.registerView(
 			rlSidebarViewId,
-			(leaf) => new RLSidebarView(leaf, this.state)
+			(leaf) => new RLTagExplorerView(leaf, this.state)
 		);
 
 		// Add a ribbon icon to toggle the view

@@ -3,7 +3,7 @@ import {RLPluginState} from "./RLPluginState";
 
 export const rlSidebarViewId = "relational-links-sidebar-view";
 
-export class RLSidebarView extends ItemView {
+export class RLTagExplorerView extends ItemView {
 	constructor(leaf: WorkspaceLeaf, private state: RLPluginState) {
 		super(leaf);
 	}
