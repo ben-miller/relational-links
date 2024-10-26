@@ -1,21 +1,18 @@
 import {Plugin, TAbstractFile, TFile, WorkspaceLeaf} from "obsidian";
-import MarkdownIt from "markdown-it";
-import {getAllTokens, rlMarkdownPlugin} from "./lib/rlMarkdownPlugin";
 import {RelationalTagSuggestor} from "./lib/relationalTagSuggestor";
 import {RelationalLinkSuggestor} from "./lib/relationalLinkSuggestor";
 import {rlMarkdownPostProcessor} from "./lib/rlMarkdownPostProcessor";
 import {rlSidebarViewId, RLTagExplorerView} from "./lib/RLTagExplorerView";
-import {RLTags} from "./lib/RLTags";
+import {RLTagsContainer} from "./lib/RLTagsContainer";
 import {RLPluginState} from "./lib/RLPluginState";
-
-const md = MarkdownIt()
-md.use(rlMarkdownPlugin)
+import {VaultScanner} from "./lib/VaultScanner";
 
 export default class RelationalLinksPlugin extends Plugin {
 	public relationalTagSuggestor: RelationalTagSuggestor | null = null;
 	public relationalLinkSuggestor: RelationalLinkSuggestor | null = null;
-	private rlTags: RLTags = new RLTags(this);
+	private rlTagsContainer: RLTagsContainer = new RLTagsContainer(this);
 	private state: RLPluginState = new RLPluginState();
+	private vaultScanner: VaultScanner | null = null;
 
 	loadSuggestors() {
 		this.relationalTagSuggestor = new RelationalTagSuggestor(this.app, this.state);
@@ -33,29 +30,13 @@ export default class RelationalLinksPlugin extends Plugin {
 		}
 	}
 
-	async loadTagsInFile(file: TFile) {
-		const content = await this.app.vault.read(file);
-		const tokens = md.parse(content, {});
-		await getAllTokens(tokens).then((tokens) => tokens
-			.filter((token) => token.type === 'relational_link')
-			.forEach((token) => {
-				const tag = token.children![0].content;
-				this.state.relationalTags.add(tag);
-			})
-		)
-	}
-
-	async loadAllTags() {
-		const markdownFiles = this.app.vault.getMarkdownFiles();
-		for (const file of markdownFiles) {
-			await this.loadTagsInFile(file);
-		}
-	}
-
 	async initParserEvents() {
+		this.vaultScanner = new VaultScanner(this.app.vault, this.state);
+		await this.vaultScanner.loadAllTags();
+
 		this.registerEvent(this.app.vault.on("modify", async (file: TAbstractFile) => {
 			if (file instanceof TFile) {
-				await this.loadTagsInFile(file);
+				await this.vaultScanner!.loadTagsInFile(file);
 			}
 		}));
 
@@ -102,11 +83,11 @@ export default class RelationalLinksPlugin extends Plugin {
 	}
 
 	async attachListeners(leaf: WorkspaceLeaf) {
-		await this.rlTags.attachTagListeners(leaf.view.containerEl);
+		await this.rlTagsContainer.attachTagListeners(leaf.view.containerEl);
 	}
 
 	detachListeners(leaf: WorkspaceLeaf) {
-		this.rlTags.detachTagListeners(leaf.view.containerEl);
+		this.rlTagsContainer.detachTagListeners(leaf.view.containerEl);
 	}
 
 	async handleActiveLeafChange(leaf: WorkspaceLeaf | null) {
@@ -136,7 +117,6 @@ export default class RelationalLinksPlugin extends Plugin {
 	async onload() {
 		console.log('Loading plugin...');
 		this.loadSuggestors();
-		await this.loadAllTags();
 		await this.initParserEvents();
 		await this.initMarkdownPostProcessor();
 		await this.initLeftSidebarView();

@@ -1,6 +1,6 @@
 import RelationalLinksPlugin from "../main";
 
-export class RLTags {
+export class RLTagsContainer {
 	private listenerMap: WeakMap<HTMLElement, EventListener> = new WeakMap();
 	private plugin: RelationalLinksPlugin;
 
