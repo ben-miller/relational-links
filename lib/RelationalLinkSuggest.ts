@@ -2,7 +2,7 @@ import {App, Editor, EditorPosition, EditorSuggestContext, EditorSuggestTriggerI
 import RelationalLinksPlugin from "../main";
 import {RLEditorSuggest} from "./RLEditorSuggest";
 
-export class RelationalLinkSuggestor extends RLEditorSuggest<TFile> {
+export class RelationalLinkSuggest extends RLEditorSuggest<TFile> {
 	plugin: RelationalLinksPlugin;
 
 	constructor(app: App, plugin: RelationalLinksPlugin) {

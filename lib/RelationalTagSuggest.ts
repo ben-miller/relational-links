@@ -2,7 +2,7 @@ import {App, Editor, EditorPosition, EditorSuggestContext, EditorSuggestTriggerI
 import {RLEditorSuggest} from "./RLEditorSuggest";
 import {RLPluginState} from "./RLPluginState";
 
-export class RelationalTagSuggestor extends RLEditorSuggest<string> {
+export class RelationalTagSuggest extends RLEditorSuggest<string> {
 	constructor(app: App, private pluginState: RLPluginState) {
 		super(app);
 	}
@@ -56,7 +56,7 @@ export class RelationalTagSuggestor extends RLEditorSuggest<string> {
 			}
 			editor.setCursor(cursor);
 
-			// HACK: Insert space so that backspace can be used to trigger link suggestor
+			// HACK: Insert space so that backspace can be used to trigger link suggest
 			editor.replaceRange(' ', cursor)
 			const newCursorPosition = { line: cursor.line, ch: cursor.ch + 1 }
 			editor.setCursor(newCursorPosition);

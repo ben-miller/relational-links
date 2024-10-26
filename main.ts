@@ -1,31 +1,31 @@
 import {Plugin, TAbstractFile, TFile, WorkspaceLeaf} from "obsidian";
-import {RelationalTagSuggestor} from "./lib/relationalTagSuggestor";
-import {RelationalLinkSuggestor} from "./lib/relationalLinkSuggestor";
+import {RelationalTagSuggest} from "./lib/RelationalTagSuggest";
+import {RelationalLinkSuggest} from "./lib/RelationalLinkSuggest";
 import {rlSidebarViewId, RLTagExplorerView} from "./lib/RLTagExplorerView";
 import {RLEditorController} from "./lib/RLEditorController";
 import {RLPluginState} from "./lib/RLPluginState";
 import {VaultScanner} from "./lib/VaultScanner";
 
 export default class RelationalLinksPlugin extends Plugin {
-	public relationalTagSuggestor: RelationalTagSuggestor | null = null;
-	public relationalLinkSuggestor: RelationalLinkSuggestor | null = null;
+	public relationalTagSuggest: RelationalTagSuggest | null = null;
+	public relationalLinkSuggest: RelationalLinkSuggest | null = null;
 	private rlEditorController: RLEditorController = new RLEditorController(this);
 	private state: RLPluginState = new RLPluginState();
 	private vaultScanner: VaultScanner | null = null;
 
-	loadSuggestors() {
-		this.relationalTagSuggestor = new RelationalTagSuggestor(this.app, this.state);
-		this.registerEditorSuggest(this.relationalTagSuggestor);
-		this.relationalLinkSuggestor = new RelationalLinkSuggestor(this.app, this);
-		this.registerEditorSuggest(this.relationalLinkSuggestor);
+	loadEditorSuggests() {
+		this.relationalTagSuggest = new RelationalTagSuggest(this.app, this.state);
+		this.registerEditorSuggest(this.relationalTagSuggest);
+		this.relationalLinkSuggest = new RelationalLinkSuggest(this.app, this);
+		this.registerEditorSuggest(this.relationalLinkSuggest);
 	}
 
-	unloadSuggestors() {
-		if (this.relationalTagSuggestor) {
-			this.relationalTagSuggestor = null;
+	unloadEditorSuggests() {
+		if (this.relationalTagSuggest) {
+			this.relationalTagSuggest = null;
 		}
-		if (this.relationalLinkSuggestor) {
-			this.relationalLinkSuggestor = null;
+		if (this.relationalLinkSuggest) {
+			this.relationalLinkSuggest = null;
 		}
 	}
 
@@ -116,7 +116,7 @@ export default class RelationalLinksPlugin extends Plugin {
 
 	async onload() {
 		console.log('Loading plugin...');
-		this.loadSuggestors();
+		this.loadEditorSuggests();
 		await this.initParserEvents();
 		await this.initMarkdownPostProcessor();
 		await this.initLeftSidebarView();
@@ -127,7 +127,7 @@ export default class RelationalLinksPlugin extends Plugin {
 
 	async onunload() {
 		console.log('Unloading plugin...');
-		this.unloadSuggestors();
+		this.unloadEditorSuggests();
 		this.app.workspace.detachLeavesOfType(rlSidebarViewId);
 	}
 }
