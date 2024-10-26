@@ -1,5 +1,5 @@
 import {App, Editor, EditorPosition, EditorSuggestContext, EditorSuggestTriggerInfo, TFile} from "obsidian";
-import RelationalLinksPlugin from "../main";
+import RelationalLinksPlugin from "../../main";
 import {RLEditorSuggest} from "./RLEditorSuggest";
 
 export class RelationalLinkSuggest extends RLEditorSuggest<TFile> {

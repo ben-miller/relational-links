@@ -1,6 +1,6 @@
 import {App, Editor, EditorPosition, EditorSuggestContext, EditorSuggestTriggerInfo, TFile} from "obsidian";
 import {RLEditorSuggest} from "./RLEditorSuggest";
-import {RLPluginState} from "./RLPluginState";
+import {RLPluginState} from "../RLPluginState";
 
 export class RelationalTagSuggest extends RLEditorSuggest<string> {
 	constructor(app: App, private pluginState: RLPluginState) {

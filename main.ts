@@ -1,6 +1,6 @@
 import {Plugin, TAbstractFile, TFile, WorkspaceLeaf} from "obsidian";
-import {RelationalTagSuggest} from "./lib/RelationalTagSuggest";
-import {RelationalLinkSuggest} from "./lib/RelationalLinkSuggest";
+import {RelationalTagSuggest} from "./lib/suggest/RelationalTagSuggest";
+import {RelationalLinkSuggest} from "./lib/suggest/RelationalLinkSuggest";
 import {rlSidebarViewId, RLTagExplorerView} from "./lib/RLTagExplorerView";
 import {RLEditorController} from "./lib/RLEditorController";
 import {RLPluginState} from "./lib/RLPluginState";
