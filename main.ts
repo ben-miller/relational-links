@@ -1,7 +1,6 @@
 import {Plugin, TAbstractFile, TFile, WorkspaceLeaf} from "obsidian";
 import {RelationalTagSuggestor} from "./lib/relationalTagSuggestor";
 import {RelationalLinkSuggestor} from "./lib/relationalLinkSuggestor";
-import {rlMarkdownPostProcessor} from "./lib/rlMarkdownPostProcessor";
 import {rlSidebarViewId, RLTagExplorerView} from "./lib/RLTagExplorerView";
 import {RLEditorController} from "./lib/RLEditorController";
 import {RLPluginState} from "./lib/RLPluginState";
@@ -47,7 +46,8 @@ export default class RelationalLinksPlugin extends Plugin {
 	}
 
 	async initMarkdownPostProcessor() {
-		this.registerMarkdownPostProcessor(rlMarkdownPostProcessor);
+		const markdownPostProcessor = this.rlEditorController.rlMarkdownPostProcessor(this.app.vault);
+		this.registerMarkdownPostProcessor(markdownPostProcessor);
 	}
 
 	async initLeftSidebarView() {
