@@ -14,13 +14,11 @@ md.use(rlMarkdownPlugin)
 export default class RelationalLinksPlugin extends Plugin {
 	public relationalTagSuggestor: RelationalTagSuggestor | null = null;
 	public relationalLinkSuggestor: RelationalLinkSuggestor | null = null;
-	public relationalTags: Set<string> = new Set();
-	private currentActiveLeaf: WorkspaceLeaf | null = null;
 	private rlTags: RLTags = new RLTags(this);
 	private state: RLPluginState = new RLPluginState();
 
 	loadSuggestors() {
-		this.relationalTagSuggestor = new RelationalTagSuggestor(this.app, this);
+		this.relationalTagSuggestor = new RelationalTagSuggestor(this.app, this.state);
 		this.registerEditorSuggest(this.relationalTagSuggestor);
 		this.relationalLinkSuggestor = new RelationalLinkSuggestor(this.app, this);
 		this.registerEditorSuggest(this.relationalLinkSuggestor);
@@ -42,7 +40,7 @@ export default class RelationalLinksPlugin extends Plugin {
 			.filter((token) => token.type === 'relational_link')
 			.forEach((token) => {
 				const tag = token.children![0].content;
-				this.relationalTags.add(tag);
+				this.state.relationalTags.add(tag);
 			})
 		)
 	}
@@ -113,12 +111,12 @@ export default class RelationalLinksPlugin extends Plugin {
 
 	async handleActiveLeafChange(leaf: WorkspaceLeaf | null) {
 		// If there's a previously active leaf, detach its listeners
-		if (this.currentActiveLeaf) {
-			this.detachListeners(this.currentActiveLeaf);
+		if (this.state.currentActiveLeaf) {
+			this.detachListeners(this.state.currentActiveLeaf);
 		}
 
 		// Set the new active leaf
-		this.currentActiveLeaf = leaf;
+		this.state.currentActiveLeaf = leaf;
 
 		// Attach listeners to the new active leaf if it exists
 		if (leaf) {
