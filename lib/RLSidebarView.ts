@@ -1,9 +1,10 @@
 import {ItemView, WorkspaceLeaf} from "obsidian";
+import {RLPluginState} from "./RLPluginState";
 
 export const rlSidebarViewId = "relational-links-sidebar-view";
 
 export class RLSidebarView extends ItemView {
-	constructor(leaf: WorkspaceLeaf) {
+	constructor(leaf: WorkspaceLeaf, private state: RLPluginState) {
 		super(leaf);
 	}
 
@@ -19,11 +20,13 @@ export class RLSidebarView extends ItemView {
 
 	// Icon for the Left Sidebar view
 	getIcon() {
-		return "star";  // Choose any icon from Obsidian's built-in icon set (e.g., 'star', 'tag', etc.)
+		return "star";
 	}
 
 	// Render the view content
 	async onOpen() {
+		console.log("Opening tax explorer with search tag:", this.state.searchTag);
+
 		const container = this.containerEl.children[1];
 		container.empty();
 

@@ -1,4 +1,3 @@
-import {Plugin} from "obsidian";
 import RelationalLinksPlugin from "../main";
 
 export class RLTags {

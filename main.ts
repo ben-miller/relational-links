@@ -6,6 +6,7 @@ import {RelationalLinkSuggestor} from "./lib/relationalLinkSuggestor";
 import {rlMarkdownPostProcessor} from "./lib/rlMarkdownPostProcessor";
 import {rlSidebarViewId, RLSidebarView} from "./lib/RLSidebarView";
 import {RLTags} from "./lib/RLTags";
+import {RLPluginState} from "./lib/RLPluginState";
 
 const md = MarkdownIt()
 md.use(rlMarkdownPlugin)
@@ -16,6 +17,7 @@ export default class RelationalLinksPlugin extends Plugin {
 	public relationalTags: Set<string> = new Set();
 	private currentActiveLeaf: WorkspaceLeaf | null = null;
 	private rlTags: RLTags = new RLTags(this);
+	private state: RLPluginState = new RLPluginState();
 
 	loadSuggestors() {
 		this.relationalTagSuggestor = new RelationalTagSuggestor(this.app, this);
@@ -73,7 +75,7 @@ export default class RelationalLinksPlugin extends Plugin {
 		// Register the sidebar view when the plugin loads
 		this.registerView(
 			rlSidebarViewId,
-			(leaf) => new RLSidebarView(leaf)
+			(leaf) => new RLSidebarView(leaf, this.state)
 		);
 
 		// Add a ribbon icon to toggle the view
@@ -84,6 +86,7 @@ export default class RelationalLinksPlugin extends Plugin {
 
 	public async openLeftSidebarView(tag = "") {
 		console.log("opening sidebar view with tag:", tag);
+		this.state.searchTag = tag;
 
 		// Check if the sidebar view is already open
 		const existingLeaf = this.app.workspace.getLeavesOfType(rlSidebarViewId)[0];
@@ -96,19 +99,19 @@ export default class RelationalLinksPlugin extends Plugin {
 			}
 		} else {
 			// If the sidebar is already open, you could bring it into focus
-			this.app.workspace.revealLeaf(existingLeaf);
+			await this.app.workspace.revealLeaf(existingLeaf);
 		}
 	}
 
-	attachListeners(leaf: WorkspaceLeaf) {
-		this.rlTags.attachTagListeners(leaf.view.containerEl);
+	async attachListeners(leaf: WorkspaceLeaf) {
+		await this.rlTags.attachTagListeners(leaf.view.containerEl);
 	}
 
 	detachListeners(leaf: WorkspaceLeaf) {
 		this.rlTags.detachTagListeners(leaf.view.containerEl);
 	}
 
-	handleActiveLeafChange(leaf: WorkspaceLeaf | null) {
+	async handleActiveLeafChange(leaf: WorkspaceLeaf | null) {
 		// If there's a previously active leaf, detach its listeners
 		if (this.currentActiveLeaf) {
 			this.detachListeners(this.currentActiveLeaf);
@@ -119,7 +122,7 @@ export default class RelationalLinksPlugin extends Plugin {
 
 		// Attach listeners to the new active leaf if it exists
 		if (leaf) {
-			this.attachListeners(leaf);
+			await this.attachListeners(leaf);
 		}
 	}
 
@@ -129,7 +132,7 @@ export default class RelationalLinksPlugin extends Plugin {
 				this.handleActiveLeafChange(leaf);
 			})
 		);
-		this.handleActiveLeafChange(this.app.workspace.getLeaf());
+		await this.handleActiveLeafChange(this.app.workspace.getLeaf());
 	}
 
 	async onload() {
