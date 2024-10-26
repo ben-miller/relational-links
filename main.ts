@@ -3,14 +3,14 @@ import {RelationalTagSuggestor} from "./lib/relationalTagSuggestor";
 import {RelationalLinkSuggestor} from "./lib/relationalLinkSuggestor";
 import {rlMarkdownPostProcessor} from "./lib/rlMarkdownPostProcessor";
 import {rlSidebarViewId, RLTagExplorerView} from "./lib/RLTagExplorerView";
-import {RLTagsContainer} from "./lib/RLTagsContainer";
+import {RLEditorController} from "./lib/RLEditorController";
 import {RLPluginState} from "./lib/RLPluginState";
 import {VaultScanner} from "./lib/VaultScanner";
 
 export default class RelationalLinksPlugin extends Plugin {
 	public relationalTagSuggestor: RelationalTagSuggestor | null = null;
 	public relationalLinkSuggestor: RelationalLinkSuggestor | null = null;
-	private rlTagsContainer: RLTagsContainer = new RLTagsContainer(this);
+	private rlEditorController: RLEditorController = new RLEditorController(this);
 	private state: RLPluginState = new RLPluginState();
 	private vaultScanner: VaultScanner | null = null;
 
@@ -83,11 +83,11 @@ export default class RelationalLinksPlugin extends Plugin {
 	}
 
 	async attachListeners(leaf: WorkspaceLeaf) {
-		await this.rlTagsContainer.attachTagListeners(leaf.view.containerEl);
+		await this.rlEditorController.attachTagListeners(leaf.view.containerEl);
 	}
 
 	detachListeners(leaf: WorkspaceLeaf) {
-		this.rlTagsContainer.detachTagListeners(leaf.view.containerEl);
+		this.rlEditorController.detachTagListeners(leaf.view.containerEl);
 	}
 
 	async handleActiveLeafChange(leaf: WorkspaceLeaf | null) {
