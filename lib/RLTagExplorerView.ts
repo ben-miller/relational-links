@@ -53,7 +53,7 @@ export class RLTagExplorerView extends ItemView {
 			collapseIcon.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg>`;
 
 			// Title text
-			itemSelf.createEl("div", { cls: "tree-item-inner", text: result.title });
+			itemSelf.createEl("div", { cls: "tree-item-inner", text: result.fromTitle });
 
 			// Flair (e.g., result count or status indicator)
 			const flairOuter = itemSelf.createEl("div", { cls: "tree-item-flair-outer" });
@@ -64,10 +64,7 @@ export class RLTagExplorerView extends ItemView {
 
 			// Dummy matched result snippet
 			const matchSnippet = matchesContainer.createEl("div", { cls: "search-result-file-match tappable" });
-			if (result.url) {
-				matchSnippet.createEl("span", { text: result.url });
-			}
-			matchSnippet.createEl("span", { cls: "search-result-file-matched-text", text: result.tag });
+			matchSnippet.createEl("span", { cls: "search-result-file-matched-text", text: result.contextLine });
 
 			// Hover buttons for expanding/collapsing context
 			const hoverButtonTop = matchSnippet.createEl("div", {
