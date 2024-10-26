@@ -59,10 +59,10 @@ export default class RelationalLinksPlugin extends Plugin {
 			console.log("clicked")
 		});
 
-		await this.openLeftSidebarView();
+		await this.openTagExplorerView();
 	}
 
-	public async openLeftSidebarView(tag = "") {
+	public async openTagExplorerView(tag = "") {
 		console.log("opening sidebar view with tag:", tag);
 		this.state.searchTag = tag;
 

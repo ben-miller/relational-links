@@ -13,7 +13,7 @@ export class RLEditorController {
 		container.querySelectorAll('.relational-links-tag').forEach((element: HTMLElement) => {
 			const listener = (event: Event) => {
 				const tag = (event.currentTarget as HTMLElement).getAttribute("href")?.substring(1);
-				this.plugin.openLeftSidebarView(tag);
+				this.plugin.openTagExplorerView(tag);
 			};
 
 			element.addEventListener("click", listener);
