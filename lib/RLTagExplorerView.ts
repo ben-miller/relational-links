@@ -50,7 +50,24 @@ export class RLTagExplorerView extends ItemView {
 
 			const matchesContainer = resultItem.createEl("div", { cls: "search-result-file-matches" });
 			const matchSnippet = matchesContainer.createEl("div", { cls: "search-result-file-match tappable" });
-			matchSnippet.createEl("span", { cls: "search-result-file-matched-text", text: result.contextLine });
+
+			// Split the context line based on lineLocation
+			const beforeMatch = result.contextLine.slice(0, result.lineLocation.start);
+			const matchText = result.contextLine.slice(result.lineLocation.start, result.lineLocation.end);
+			const afterMatch = result.contextLine.slice(result.lineLocation.end + 1);
+
+			// Create span for text before the matched text
+			if (beforeMatch) {
+				matchSnippet.createEl("span", { text: beforeMatch });
+			}
+
+			// Create span for the matched text with specific class
+			matchSnippet.createEl("span", { cls: "search-result-file-matched-text", text: matchText });
+
+			// Create span for text after the matched text
+			if (afterMatch) {
+				matchSnippet.createEl("span", { text: afterMatch });
+			}
 		});
 	}
 
