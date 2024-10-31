@@ -1,4 +1,4 @@
-import {Plugin, TAbstractFile, TFile, WorkspaceLeaf} from "obsidian";
+import {Plugin, WorkspaceLeaf} from "obsidian";
 import {RelationalTagSuggest} from "./lib/suggest/RelationalTagSuggest";
 import {RelationalLinkSuggest} from "./lib/suggest/RelationalLinkSuggest";
 import {rlSidebarViewId, RLTagExplorerView} from "./lib/RLTagExplorerView";
@@ -12,7 +12,7 @@ export default class RelationalLinksPlugin extends Plugin {
 	public relationalLinkSuggest: RelationalLinkSuggest | null = null;
 	public state: RLPluginState = new RLPluginState();
 	public rlEditorController: RLEditorController;
-	private vaultScanner: VaultScanner | null = null;
+	public vaultScanner: VaultScanner;
 
 	public async openTagExplorerView(tag = "") {
 		this.state.searchTag = tag;
@@ -65,8 +65,7 @@ export default class RelationalLinksPlugin extends Plugin {
 		console.log('Loading plugin...');
 		RelationalTagSuggest.load(this);
 		RelationalLinkSuggest.load(this);
-		this.vaultScanner = new VaultScanner(this.app.vault, this.state);
-		await this.vaultScanner.scanVault();
+		await VaultScanner.load(this);
 		await RLEditorController.load(this, this.vaultScanner);
 		loadRlMarkdownPlugin(this);
 		await RLTagExplorerView.load(this, this.vaultScanner);

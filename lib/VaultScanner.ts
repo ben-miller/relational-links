@@ -2,6 +2,7 @@ import {TFile, Vault} from "obsidian";
 import {getAllTokens, rlMarkdownPlugin} from "./markdown-it/rlMarkdownPlugin";
 import {RLPluginState} from "./RLPluginState";
 import MarkdownIt from "markdown-it";
+import RelationalLinksPlugin from "../main";
 
 const md = MarkdownIt()
 md.use(rlMarkdownPlugin)
@@ -20,6 +21,11 @@ export class VaultScanner {
 		private vault: Vault,
 		private pluginState: RLPluginState
 	) {}
+
+	static async load(plugin: RelationalLinksPlugin) {
+		plugin.vaultScanner = new VaultScanner(plugin.app.vault, plugin.state);
+		await plugin.vaultScanner.scanVault();
+	}
 
 	public async loadTagsInFile(file: TFile) {
 		const content = await this.vault.read(file);
