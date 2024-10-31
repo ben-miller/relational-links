@@ -1,9 +1,10 @@
 import MarkdownIt from "markdown-it";
 import { StateInline, Token } from "markdown-it";
 import RelationalLinksPlugin from "../../main";
+import {MarkdownPostProcessorContext, TFile, Vault} from "obsidian";
 
 export function loadRlMarkdownPlugin(plugin: RelationalLinksPlugin) {
-	const markdownPostProcessor = plugin.rlAppController.rlMarkdownPostProcessor(plugin.app.vault);
+	const markdownPostProcessor = rlMarkdownPostProcessor(plugin.app.vault);
 	plugin.registerMarkdownPostProcessor(markdownPostProcessor);
 }
 
@@ -62,3 +63,24 @@ export function rlMarkdownPlugin(md: MarkdownIt) {
 	// Register the inline rule for the relational links
 	md.inline.ruler.before("link", "relational_link", parseRelationalLink);
 }
+
+function rlMarkdownPostProcessor(vault: Vault): (element: HTMLElement, context: MarkdownPostProcessorContext) => void {
+	return (element: HTMLElement, context: MarkdownPostProcessorContext) => {
+		element.querySelectorAll("p").forEach((p) => {
+			p.innerHTML = p.innerHTML.replace(/#\[([a-zA-Z0-9._:-]+)\[(.*?)\]\]/g, (match, tag, linkPath) => {
+				const file = vault.getAbstractFileByPath(linkPath);
+				const tagLink = `<a href="#${tag}" class="relational-links-tag" target="_blank" rel="noopener nofollow">${tag}</a>`;
+				let pathLink = "";
+				if (file && file instanceof TFile) {
+					const basename = file.basename;
+					pathLink = `<a data-ref="${basename}" href="${basename}" class="internal-link">${basename}</a>`;
+				} else {
+					const basename = linkPath.split('/').pop()?.replace(/\.[^/.]+$/, '') || linkPath;
+					pathLink = `<a data-ref="${basename}" href="${basename}" class="internal-link is-unresolved">${basename}</a>`;
+				}
+				return `#[${tagLink}[${pathLink}]]`;
+			});
+		});
+	}
+}
+
