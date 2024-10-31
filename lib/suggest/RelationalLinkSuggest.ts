@@ -10,6 +10,16 @@ export class RelationalLinkSuggest extends RLEditorSuggest<TFile> {
 		this.plugin = plugin;
 	}
 
+	static load(plugin: RelationalLinksPlugin) {
+		plugin.relationalLinkSuggest = new RelationalLinkSuggest(plugin.app, plugin);
+		plugin.registerEditorSuggest(plugin.relationalLinkSuggest);
+	}
+
+	static unload(plugin: RelationalLinksPlugin) {
+		plugin.relationalLinkSuggest = null;
+	}
+
+
 	onTrigger(cursor: EditorPosition, editor: Editor, file: TFile): EditorSuggestTriggerInfo | null {
 		const lineBeforeCursor = editor.getLine(cursor.line).substr(0, cursor.ch);
 		const match = lineBeforeCursor.match(/#\[[a-zA-Z0-9._:-]*?\[(.*)/);
