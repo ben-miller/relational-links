@@ -14,14 +14,11 @@ export default class RelationalLinksPlugin extends Plugin {
 	private vaultScanner: VaultScanner | null = null;
 
 	loadEditorSuggests() {
-		this.relationalTagSuggest = new RelationalTagSuggest(this.app, this.state);
-		this.registerEditorSuggest(this.relationalTagSuggest);
 		this.relationalLinkSuggest = new RelationalLinkSuggest(this.app, this);
 		this.registerEditorSuggest(this.relationalLinkSuggest);
 	}
 
 	unloadEditorSuggests() {
-		this.relationalTagSuggest = null;
 		this.relationalLinkSuggest = null;
 	}
 
@@ -80,6 +77,7 @@ export default class RelationalLinksPlugin extends Plugin {
 	async onload() {
 		console.log('Loading plugin...');
 		this.loadEditorSuggests();
+		RelationalTagSuggest.load(this);
 		this.vaultScanner = new VaultScanner(this.app.vault, this.state);
 		await this.vaultScanner.scanVault();
 		await this.rlEditorController.initParserEvents(this.vaultScanner);
@@ -92,6 +90,7 @@ export default class RelationalLinksPlugin extends Plugin {
 	async onunload() {
 		console.log('Unloading plugin...');
 		this.unloadEditorSuggests();
+		RelationalTagSuggest.unload(this);
 		this.app.workspace.detachLeavesOfType(rlSidebarViewId);
 	}
 }

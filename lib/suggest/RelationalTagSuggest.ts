@@ -1,10 +1,20 @@
 import {App, Editor, EditorPosition, EditorSuggestContext, EditorSuggestTriggerInfo, TFile} from "obsidian";
 import {RLEditorSuggest} from "./RLEditorSuggest";
 import {RLPluginState} from "../RLPluginState";
+import RelationalLinksPlugin from "../../main";
 
 export class RelationalTagSuggest extends RLEditorSuggest<string> {
 	constructor(app: App, private pluginState: RLPluginState) {
 		super(app);
+	}
+
+	static load(plugin: RelationalLinksPlugin) {
+		plugin.relationalTagSuggest = new RelationalTagSuggest(plugin.app, plugin.state);
+		plugin.registerEditorSuggest(plugin.relationalTagSuggest);
+	}
+
+	static unload(plugin: RelationalLinksPlugin) {
+		plugin.relationalTagSuggest = null;
 	}
 
 	onTrigger(cursor: EditorPosition, editor: Editor, file: TFile): EditorSuggestTriggerInfo | null {
