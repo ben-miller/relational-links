@@ -21,12 +21,8 @@ export default class RelationalLinksPlugin extends Plugin {
 	}
 
 	unloadEditorSuggests() {
-		if (this.relationalTagSuggest) {
-			this.relationalTagSuggest = null;
-		}
-		if (this.relationalLinkSuggest) {
-			this.relationalLinkSuggest = null;
-		}
+		this.relationalTagSuggest = null;
+		this.relationalLinkSuggest = null;
 	}
 
 	async initMarkdownPostProcessor() {
