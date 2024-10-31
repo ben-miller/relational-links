@@ -46,6 +46,8 @@ export class RLTagExplorerView extends ItemView {
 		} else {
 			await this.plugin.app.workspace.revealLeaf(existingLeaf);
 		}
+
+		await this.renderContent();
 	}
 
 	// Unique identifier for the view type
