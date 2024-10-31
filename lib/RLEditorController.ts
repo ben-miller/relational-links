@@ -11,6 +11,11 @@ export class RLEditorController {
 		private pluginState: RLPluginState
 	) {}
 
+	static async load(plugin: RelationalLinksPlugin, vaultScanner: VaultScanner) {
+		plugin.rlEditorController = new RLEditorController(plugin, plugin.state);
+		await plugin.rlEditorController.initParserEvents(vaultScanner);
+	}
+
 	async initParserEvents(vaultScanner: VaultScanner) {
 		this.plugin.registerEvent(this.plugin.app.vault.on("modify", async (file: TAbstractFile) => {
 			if (file instanceof TFile) {

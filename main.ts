@@ -11,7 +11,7 @@ export default class RelationalLinksPlugin extends Plugin {
 	public relationalTagSuggest: RelationalTagSuggest | null = null;
 	public relationalLinkSuggest: RelationalLinkSuggest | null = null;
 	public state: RLPluginState = new RLPluginState();
-	public rlEditorController: RLEditorController = new RLEditorController(this, this.state);
+	public rlEditorController: RLEditorController;
 	private vaultScanner: VaultScanner | null = null;
 
 	public async openTagExplorerView(tag = "") {
@@ -67,7 +67,7 @@ export default class RelationalLinksPlugin extends Plugin {
 		RelationalLinkSuggest.load(this);
 		this.vaultScanner = new VaultScanner(this.app.vault, this.state);
 		await this.vaultScanner.scanVault();
-		await this.rlEditorController.initParserEvents(this.vaultScanner);
+		await RLEditorController.load(this, this.vaultScanner);
 		loadRlMarkdownPlugin(this);
 		await RLTagExplorerView.load(this, this.vaultScanner);
 		await this.initLeafChangeEvents();
