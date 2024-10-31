@@ -1,7 +1,7 @@
 import RelationalLinksPlugin from "../main";
 import {TAbstractFile, TFile} from "obsidian";
 import {RLPluginState} from "./RLPluginState";
-import {VaultScanner} from "./VaultScanner";
+import {LinkIndex} from "./LinkIndex";
 
 export class RLAppController {
 	private listenerMap: WeakMap<HTMLElement, EventListener> = new WeakMap();
@@ -11,12 +11,12 @@ export class RLAppController {
 		private pluginState: RLPluginState
 	) {}
 
-	static async load(plugin: RelationalLinksPlugin, vaultScanner: VaultScanner) {
+	static async load(plugin: RelationalLinksPlugin, vaultScanner: LinkIndex) {
 		plugin.rlAppController = new RLAppController(plugin, plugin.state);
 		await plugin.rlAppController.init(vaultScanner);
 	}
 
-	async init(vaultScanner: VaultScanner) {
+	async init(vaultScanner: LinkIndex) {
 		this.plugin.registerEvent(this.plugin.app.vault.on("modify", async (file: TAbstractFile) => {
 			if (file instanceof TFile) {
 				await vaultScanner.loadTagsInFile(file);

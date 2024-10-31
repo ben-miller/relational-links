@@ -4,7 +4,7 @@ import {RelationalLinkSuggest} from "./lib/suggest/RelationalLinkSuggest";
 import {rlSidebarViewId, RLTagExplorerView} from "./lib/RLTagExplorerView";
 import {RLAppController} from "./lib/RLAppController";
 import {RLPluginState} from "./lib/RLPluginState";
-import {VaultScanner} from "./lib/VaultScanner";
+import {LinkIndex} from "./lib/LinkIndex";
 import {loadRlMarkdownPlugin} from "./lib/markdown-it/rlMarkdownPlugin";
 
 export default class RelationalLinksPlugin extends Plugin {
@@ -12,7 +12,7 @@ export default class RelationalLinksPlugin extends Plugin {
 	public relationalLinkSuggest: RelationalLinkSuggest | null = null;
 	public state: RLPluginState = new RLPluginState();
 	public rlAppController: RLAppController;
-	public vaultScanner: VaultScanner;
+	public linkIndex: LinkIndex;
 
 	public async openTagExplorerView(tag = "") {
 		this.state.searchTag = tag;
@@ -57,9 +57,9 @@ export default class RelationalLinksPlugin extends Plugin {
 		loadRlMarkdownPlugin(this);
 		RelationalTagSuggest.load(this);
 		RelationalLinkSuggest.load(this);
-		await VaultScanner.load(this);
-		await RLAppController.load(this, this.vaultScanner);
-		await RLTagExplorerView.load(this, this.vaultScanner);
+		await LinkIndex.load(this);
+		await RLAppController.load(this, this.linkIndex);
+		await RLTagExplorerView.load(this, this.linkIndex);
 		console.log('Plugin loaded.');
 	}
 

@@ -1,6 +1,6 @@
 import {ItemView, WorkspaceLeaf} from "obsidian";
 import {RLPluginState} from "./RLPluginState";
-import {VaultScanner} from "./VaultScanner";
+import {LinkIndex} from "./LinkIndex";
 import RelationalLinksPlugin from "../main";
 
 export const rlSidebarViewId = "relational-links-sidebar-view";
@@ -9,12 +9,12 @@ export class RLTagExplorerView extends ItemView {
 	constructor(
 		leaf: WorkspaceLeaf,
 		private state: RLPluginState,
-		private vaultScanner: VaultScanner
+		private vaultScanner: LinkIndex
 	) {
 		super(leaf);
 	}
 
-	static async load(plugin: RelationalLinksPlugin, vaultScanner: VaultScanner) {
+	static async load(plugin: RelationalLinksPlugin, vaultScanner: LinkIndex) {
 		// Register the sidebar view when the plugin loads
 		plugin.registerView(
 			rlSidebarViewId,

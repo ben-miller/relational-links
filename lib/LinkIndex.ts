@@ -16,15 +16,15 @@ export interface RelationalLink {
 	lineLocation: { start: number; end: number }
 }
 
-export class VaultScanner {
+export class LinkIndex {
 	constructor(
 		private vault: Vault,
 		private pluginState: RLPluginState
 	) {}
 
 	static async load(plugin: RelationalLinksPlugin) {
-		plugin.vaultScanner = new VaultScanner(plugin.app.vault, plugin.state);
-		await plugin.vaultScanner.scanVault();
+		plugin.linkIndex = new LinkIndex(plugin.app.vault, plugin.state);
+		await plugin.linkIndex.scanVault();
 	}
 
 	public async loadTagsInFile(file: TFile) {

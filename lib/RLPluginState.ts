@@ -1,5 +1,5 @@
 import {WorkspaceLeaf} from "obsidian";
-import {RelationalLink} from "./VaultScanner";
+import {RelationalLink} from "./LinkIndex";
 
 export class RLPluginState {
 	constructor(
