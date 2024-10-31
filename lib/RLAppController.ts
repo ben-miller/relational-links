@@ -25,23 +25,26 @@ export class RLAppController {
 			this.detachTagListeners(this.plugin.state.currentActiveLeaf.view.containerEl);
 		}
 		this.plugin.state.currentActiveLeaf = leaf;
-
 		if (leaf) {
-			leaf.view.containerEl.querySelectorAll('.relational-links-tag').forEach((element: HTMLElement) => {
-				const listener = (event: Event) => {
-					const tag = (event.currentTarget as HTMLElement).getAttribute("href")?.substring(1);
-					if (tag) {
-						this.pluginState.searchTag = tag;
-						this.plugin.openTagExplorerView(tag);
-					} else {
-						throw Error('Unknown tag');
-					}
-				};
-
-				element.addEventListener("click", listener);
-				this.tagElementListenerMap.set(element, listener);
-			});
+			this.attachTagListeners(leaf.view.containerEl);
 		}
+	}
+
+	private attachTagListeners(container: HTMLElement) {
+		container.querySelectorAll('.relational-links-tag').forEach((element: HTMLElement) => {
+			const listener = (event: Event) => {
+				const tag = (event.currentTarget as HTMLElement).getAttribute("href")?.substring(1);
+				if (tag) {
+					this.pluginState.searchTag = tag;
+					this.plugin.openTagExplorerView(tag);
+				} else {
+					throw Error('Unknown tag');
+				}
+			};
+
+			element.addEventListener("click", listener);
+			this.tagElementListenerMap.set(element, listener);
+		});
 	}
 
 	public detachTagListeners(container: HTMLElement) {
