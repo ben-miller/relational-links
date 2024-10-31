@@ -2,6 +2,7 @@ import {ItemView, WorkspaceLeaf} from "obsidian";
 import {RLPluginState} from "./RLPluginState";
 import {LinkIndex} from "./LinkIndex";
 import RelationalLinksPlugin from "../main";
+import {RLAppController} from "./RLAppController";
 
 export const rlSidebarViewId = "relational-links-sidebar-view";
 
@@ -14,7 +15,7 @@ export class RLTagExplorerView extends ItemView {
 		super(leaf);
 	}
 
-	static async load(plugin: RelationalLinksPlugin, linkIndex: LinkIndex) {
+	static async load(plugin: RelationalLinksPlugin, linkIndex: LinkIndex, appController: RLAppController) {
 		// Register the sidebar view when the plugin loads
 		plugin.registerView(
 			rlSidebarViewId,
@@ -26,7 +27,7 @@ export class RLTagExplorerView extends ItemView {
 			console.log("Ribbon clicked")
 		});
 
-		await plugin.openTagExplorerView();
+		await appController.openTagExplorerView();
 	}
 
 	// Unique identifier for the view type
