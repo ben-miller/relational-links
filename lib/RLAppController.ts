@@ -32,11 +32,11 @@ export class RLAppController {
 
 	private attachTagListeners(container: HTMLElement) {
 		container.querySelectorAll('.relational-links-tag').forEach((element: HTMLElement) => {
-			const listener = (event: Event) => {
+			const listener = async (event: Event) => {
 				const tag = (event.currentTarget as HTMLElement).getAttribute("href")?.substring(1);
 				if (tag) {
 					this.pluginState.searchTag = tag;
-					this.plugin.openTagExplorerView(tag);
+					await this.plugin.openTagExplorerView(tag);
 				} else {
 					throw Error('Unknown tag');
 				}
