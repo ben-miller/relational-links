@@ -35,7 +35,7 @@ export class RelationalTagSuggest extends RLEditorSuggest<string> {
 	}
 
 	getSuggestions(context: EditorSuggestContext): string[] {
-		const suggestions = Array.from(this.pluginState.links)
+		const suggestions = this.pluginState.linkIndex!.links()
 			.map(link => link.tag)
 			.filter(tag =>
 				tag.toLowerCase().includes(context.query.toLowerCase())

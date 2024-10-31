@@ -1,10 +1,10 @@
 import {WorkspaceLeaf} from "obsidian";
-import {RelationalLink} from "./LinkIndex";
+import {LinkIndex} from "./LinkIndex";
 
 export class RLPluginState {
 	constructor(
 		public searchTag: string = "",
 		public currentActiveLeaf: WorkspaceLeaf | null = null,
-		public links: Set<RelationalLink> = new Set()
+		public linkIndex: LinkIndex | null = null,
 	) {}
 }

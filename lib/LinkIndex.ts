@@ -1,6 +1,5 @@
 import {TAbstractFile, TFile, Vault} from "obsidian";
 import {getAllTokens, rlMarkdownPlugin} from "./markdown-it/rlMarkdownPlugin";
-import {RLPluginState} from "./RLPluginState";
 import MarkdownIt from "markdown-it";
 import RelationalLinksPlugin from "../main";
 
@@ -17,13 +16,16 @@ export interface RelationalLink {
 }
 
 export class LinkIndex {
+	private linkSet: Set<RelationalLink> = new Set();
+
 	constructor(
 		private vault: Vault,
-		private pluginState: RLPluginState
 	) {}
 
+	public links(): RelationalLink[] { return Array.from(this.linkSet) }
+
 	static async load(plugin: RelationalLinksPlugin) {
-		plugin.linkIndex = new LinkIndex(plugin.app.vault, plugin.state);
+		plugin.linkIndex = new LinkIndex(plugin.app.vault);
 		await plugin.linkIndex.scanVault();
 
 		plugin.registerEvent(plugin.app.vault.on("modify", async (file: TAbstractFile) => {
@@ -54,7 +56,7 @@ export class LinkIndex {
 					contextLine: linkString,
 					lineLocation: { start: 0, end: linkString.length }
 				}
-				this.pluginState.links.add(link);
+				this.linkSet.add(link);
 			})
 		)
 	}
@@ -67,7 +69,7 @@ export class LinkIndex {
 	}
 
 	public async searchTag(tag: string): Promise<RelationalLink[]> {
-		const results = Array.from(this.pluginState.links).filter(link => link.tag === tag);
+		const results = Array.from(this.linkSet).filter(link => link.tag === tag);
 		return Promise.resolve(results);
 	}
 }
