@@ -9,16 +9,16 @@ export class RLTagExplorerView extends ItemView {
 	constructor(
 		leaf: WorkspaceLeaf,
 		private state: RLPluginState,
-		private vaultScanner: LinkIndex
+		private linkIndex: LinkIndex
 	) {
 		super(leaf);
 	}
 
-	static async load(plugin: RelationalLinksPlugin, vaultScanner: LinkIndex) {
+	static async load(plugin: RelationalLinksPlugin, linkIndex: LinkIndex) {
 		// Register the sidebar view when the plugin loads
 		plugin.registerView(
 			rlSidebarViewId,
-			(leaf) => new RLTagExplorerView(leaf, plugin.state, vaultScanner)
+			(leaf) => new RLTagExplorerView(leaf, plugin.state, linkIndex)
 		);
 
 		// Add a ribbon icon to toggle the view
@@ -68,7 +68,7 @@ export class RLTagExplorerView extends ItemView {
 		// Main container to hold all search results
 		const resultsContainer = container.createEl("div", { cls: "search-results-children" });
 
-		const searchResults = await this.vaultScanner.searchTag(this.state.searchTag);
+		const searchResults = await this.linkIndex.searchTag(this.state.searchTag);
 		searchResults.forEach(result => {
 			const resultItem = resultsContainer.createEl("div", { cls: "tree-item search-result", attr: { draggable: "true" } });
 			const itemSelf = resultItem.createEl("div", { cls: "tree-item-self search-result-file-title is-clickable" });

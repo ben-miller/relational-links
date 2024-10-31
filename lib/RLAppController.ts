@@ -11,15 +11,15 @@ export class RLAppController {
 		private pluginState: RLPluginState
 	) {}
 
-	static async load(plugin: RelationalLinksPlugin, vaultScanner: LinkIndex) {
+	static async load(plugin: RelationalLinksPlugin, linkIndex: LinkIndex) {
 		const rlAppController = new RLAppController(plugin, plugin.state);
-		await rlAppController.init(vaultScanner);
+		await rlAppController.init(linkIndex);
 	}
 
-	async init(vaultScanner: LinkIndex) {
+	async init(linkIndex: LinkIndex) {
 		this.plugin.registerEvent(this.plugin.app.vault.on("modify", async (file: TAbstractFile) => {
 			if (file instanceof TFile) {
-				await vaultScanner.loadTagsInFile(file);
+				await linkIndex.loadTagsInFile(file);
 			}
 		}));
 
