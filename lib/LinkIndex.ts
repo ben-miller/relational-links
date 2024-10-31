@@ -1,4 +1,4 @@
-import {TFile, Vault} from "obsidian";
+import {TAbstractFile, TFile, Vault} from "obsidian";
 import {getAllTokens, rlMarkdownPlugin} from "./markdown-it/rlMarkdownPlugin";
 import {RLPluginState} from "./RLPluginState";
 import MarkdownIt from "markdown-it";
@@ -25,6 +25,17 @@ export class LinkIndex {
 	static async load(plugin: RelationalLinksPlugin) {
 		plugin.linkIndex = new LinkIndex(plugin.app.vault, plugin.state);
 		await plugin.linkIndex.scanVault();
+
+		plugin.registerEvent(plugin.app.vault.on("modify", async (file: TAbstractFile) => {
+			if (file instanceof TFile) {
+				await plugin.linkIndex.loadTagsInFile(file);
+			}
+		}));
+
+		plugin.registerEvent(plugin.app.vault.on("rename", async (file: TAbstractFile, oldPath) => {
+			// TODO Update relational links pointing to this file.
+			console.log(`File renamed from ${oldPath} to ${file.path}`);
+		}));
 	}
 
 	public async loadTagsInFile(file: TFile) {

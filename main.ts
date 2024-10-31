@@ -34,7 +34,7 @@ export default class RelationalLinksPlugin extends Plugin {
 		RelationalTagSuggest.load(this);
 		RelationalLinkSuggest.load(this);
 		await LinkIndex.load(this);
-		await RLAppController.load(this, this.linkIndex);
+		await RLAppController.load(this);
 		await RLTagExplorerView.load(this, this.linkIndex);
 		console.log('Plugin loaded.');
 	}

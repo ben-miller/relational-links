@@ -1,7 +1,6 @@
 import RelationalLinksPlugin from "../main";
-import {TAbstractFile, TFile, WorkspaceLeaf} from "obsidian";
+import {WorkspaceLeaf} from "obsidian";
 import {RLPluginState} from "./RLPluginState";
-import {LinkIndex} from "./LinkIndex";
 
 export class RLAppController {
 	private listenerMap: WeakMap<HTMLElement, EventListener> = new WeakMap();
@@ -11,23 +10,12 @@ export class RLAppController {
 		private pluginState: RLPluginState
 	) {}
 
-	static async load(plugin: RelationalLinksPlugin, linkIndex: LinkIndex) {
+	static async load(plugin: RelationalLinksPlugin) {
 		const rlAppController = new RLAppController(plugin, plugin.state);
-		await rlAppController.init(linkIndex);
+		await rlAppController.init();
 	}
 
-	async init(linkIndex: LinkIndex) {
-		this.plugin.registerEvent(this.plugin.app.vault.on("modify", async (file: TAbstractFile) => {
-			if (file instanceof TFile) {
-				await linkIndex.loadTagsInFile(file);
-			}
-		}));
-
-		this.plugin.registerEvent(this.plugin.app.vault.on("rename", async (file: TAbstractFile, oldPath) => {
-			// TODO Update relational links pointing to this file.
-			console.log(`File renamed from ${oldPath} to ${file.path}`);
-		}));
-
+	async init() {
 		this.plugin.registerEvent(
 			this.plugin.app.workspace.on('active-leaf-change', async (leaf) => {
 				await this.handleActiveLeafChange(leaf);
