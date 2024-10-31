@@ -36,14 +36,6 @@ export class RLAppController {
 		await this.handleActiveLeafChange(this.plugin.app.workspace.getLeaf());
 	}
 
-	async attachListeners(leaf: WorkspaceLeaf) {
-		await this.attachTagListeners(leaf.view.containerEl);
-	}
-
-	detachListeners(leaf: WorkspaceLeaf) {
-		this.detachTagListeners(leaf.view.containerEl);
-	}
-
 	public async attachTagListeners(container: HTMLElement) {
 		container.querySelectorAll('.relational-links-tag').forEach((element: HTMLElement) => {
 			const listener = (event: Event) => {
@@ -64,7 +56,7 @@ export class RLAppController {
 	async handleActiveLeafChange(leaf: WorkspaceLeaf | null) {
 		// If there's a previously active leaf, detach its listeners
 		if (this.plugin.state.currentActiveLeaf) {
-			this.detachListeners(this.plugin.state.currentActiveLeaf);
+			this.detachTagListeners(this.plugin.state.currentActiveLeaf.view.containerEl);
 		}
 
 		// Set the new active leaf
@@ -72,7 +64,7 @@ export class RLAppController {
 
 		// Attach listeners to the new active leaf if it exists
 		if (leaf) {
-			await this.attachListeners(leaf);
+			await this.attachTagListeners(leaf.view.containerEl);
 		}
 	}
 
