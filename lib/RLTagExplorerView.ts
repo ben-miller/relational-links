@@ -1,6 +1,7 @@
 import {ItemView, WorkspaceLeaf} from "obsidian";
 import {RLPluginState} from "./RLPluginState";
 import {VaultScanner} from "./VaultScanner";
+import RelationalLinksPlugin from "../main";
 
 export const rlSidebarViewId = "relational-links-sidebar-view";
 
@@ -11,6 +12,21 @@ export class RLTagExplorerView extends ItemView {
 		private vaultScanner: VaultScanner
 	) {
 		super(leaf);
+	}
+
+	static async load(plugin: RelationalLinksPlugin, vaultScanner: VaultScanner) {
+		// Register the sidebar view when the plugin loads
+		plugin.registerView(
+			rlSidebarViewId,
+			(leaf) => new RLTagExplorerView(leaf, plugin.state, vaultScanner)
+		);
+
+		// Add a ribbon icon to toggle the view
+		plugin.addRibbonIcon("star", "Relational Links Explorer", () => {
+			console.log("Ribbon clicked")
+		});
+
+		await plugin.openTagExplorerView();
 	}
 
 	// Unique identifier for the view type

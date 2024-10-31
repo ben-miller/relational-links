@@ -9,7 +9,7 @@ import {VaultScanner} from "./lib/VaultScanner";
 export default class RelationalLinksPlugin extends Plugin {
 	public relationalTagSuggest: RelationalTagSuggest | null = null;
 	public relationalLinkSuggest: RelationalLinkSuggest | null = null;
-	private state: RLPluginState = new RLPluginState();
+	public state: RLPluginState = new RLPluginState();
 	private rlEditorController: RLEditorController = new RLEditorController(this, this.state);
 	private vaultScanner: VaultScanner | null = null;
 
@@ -28,21 +28,6 @@ export default class RelationalLinksPlugin extends Plugin {
 	async initMarkdownPostProcessor() {
 		const markdownPostProcessor = this.rlEditorController.rlMarkdownPostProcessor(this.app.vault);
 		this.registerMarkdownPostProcessor(markdownPostProcessor);
-	}
-
-	async initLeftSidebarView(vaultScanner: VaultScanner) {
-		// Register the sidebar view when the plugin loads
-		this.registerView(
-			rlSidebarViewId,
-			(leaf) => new RLTagExplorerView(leaf, this.state, vaultScanner)
-		);
-
-		// Add a ribbon icon to toggle the view
-		this.addRibbonIcon("star", "Relational Links Explorer", () => {
-			console.log("clicked")
-		});
-
-		await this.openTagExplorerView();
 	}
 
 	public async openTagExplorerView(tag = "") {
@@ -99,7 +84,7 @@ export default class RelationalLinksPlugin extends Plugin {
 		await this.vaultScanner.scanVault();
 		await this.rlEditorController.initParserEvents(this.vaultScanner);
 		await this.initMarkdownPostProcessor();
-		await this.initLeftSidebarView(this.vaultScanner);
+		await RLTagExplorerView.load(this, this.vaultScanner);
 		await this.initLeafChangeEvents();
 		console.log('Plugin loaded.');
 	}
