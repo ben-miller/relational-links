@@ -1,5 +1,11 @@
 import MarkdownIt from "markdown-it";
 import { StateInline, Token } from "markdown-it";
+import RelationalLinksPlugin from "../../main";
+
+export function loadRlMarkdownPlugin(plugin: RelationalLinksPlugin) {
+	const markdownPostProcessor = plugin.rlEditorController.rlMarkdownPostProcessor(plugin.app.vault);
+	plugin.registerMarkdownPostProcessor(markdownPostProcessor);
+}
 
 export async function getAllTokens(tokens: Token[]): Promise<Token[]> {
 	let allTokens: Token[] = [];

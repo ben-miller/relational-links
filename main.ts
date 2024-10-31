@@ -5,18 +5,14 @@ import {rlSidebarViewId, RLTagExplorerView} from "./lib/RLTagExplorerView";
 import {RLEditorController} from "./lib/RLEditorController";
 import {RLPluginState} from "./lib/RLPluginState";
 import {VaultScanner} from "./lib/VaultScanner";
+import {loadRlMarkdownPlugin} from "./lib/markdown-it/rlMarkdownPlugin";
 
 export default class RelationalLinksPlugin extends Plugin {
 	public relationalTagSuggest: RelationalTagSuggest | null = null;
 	public relationalLinkSuggest: RelationalLinkSuggest | null = null;
 	public state: RLPluginState = new RLPluginState();
-	private rlEditorController: RLEditorController = new RLEditorController(this, this.state);
+	public rlEditorController: RLEditorController = new RLEditorController(this, this.state);
 	private vaultScanner: VaultScanner | null = null;
-
-	async initMarkdownPostProcessor() {
-		const markdownPostProcessor = this.rlEditorController.rlMarkdownPostProcessor(this.app.vault);
-		this.registerMarkdownPostProcessor(markdownPostProcessor);
-	}
 
 	public async openTagExplorerView(tag = "") {
 		this.state.searchTag = tag;
@@ -72,7 +68,7 @@ export default class RelationalLinksPlugin extends Plugin {
 		this.vaultScanner = new VaultScanner(this.app.vault, this.state);
 		await this.vaultScanner.scanVault();
 		await this.rlEditorController.initParserEvents(this.vaultScanner);
-		await this.initMarkdownPostProcessor();
+		loadRlMarkdownPlugin(this);
 		await RLTagExplorerView.load(this, this.vaultScanner);
 		await this.initLeafChangeEvents();
 		console.log('Plugin loaded.');
