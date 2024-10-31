@@ -29,19 +29,6 @@ export default class RelationalLinksPlugin extends Plugin {
 		}
 	}
 
-	async initParserEvents(vaultScanner: VaultScanner) {
-		this.registerEvent(this.app.vault.on("modify", async (file: TAbstractFile) => {
-			if (file instanceof TFile) {
-				await vaultScanner.loadTagsInFile(file);
-			}
-		}));
-
-		this.registerEvent(this.app.vault.on("rename", async (file: TAbstractFile, oldPath) => {
-			// TODO Update relational links pointing to this file.
-			console.log(`File renamed from ${oldPath} to ${file.path}`);
-		}));
-	}
-
 	async initMarkdownPostProcessor() {
 		const markdownPostProcessor = this.rlEditorController.rlMarkdownPostProcessor(this.app.vault);
 		this.registerMarkdownPostProcessor(markdownPostProcessor);
@@ -114,7 +101,7 @@ export default class RelationalLinksPlugin extends Plugin {
 		this.loadEditorSuggests();
 		this.vaultScanner = new VaultScanner(this.app.vault, this.state);
 		await this.vaultScanner.scanVault();
-		await this.initParserEvents(this.vaultScanner);
+		await this.rlEditorController.initParserEvents(this.vaultScanner);
 		await this.initMarkdownPostProcessor();
 		await this.initLeftSidebarView(this.vaultScanner);
 		await this.initLeafChangeEvents();

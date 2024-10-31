@@ -1,6 +1,7 @@
 import RelationalLinksPlugin from "../main";
-import {MarkdownPostProcessorContext, TFile, Vault} from "obsidian";
+import {MarkdownPostProcessorContext, TAbstractFile, TFile, Vault} from "obsidian";
 import {RLPluginState} from "./RLPluginState";
+import {VaultScanner} from "./VaultScanner";
 
 export class RLEditorController {
 	private listenerMap: WeakMap<HTMLElement, EventListener> = new WeakMap();
@@ -9,6 +10,19 @@ export class RLEditorController {
 		private plugin: RelationalLinksPlugin,
 		private pluginState: RLPluginState
 	) {}
+
+	async initParserEvents(vaultScanner: VaultScanner) {
+		this.plugin.registerEvent(this.plugin.app.vault.on("modify", async (file: TAbstractFile) => {
+			if (file instanceof TFile) {
+				await vaultScanner.loadTagsInFile(file);
+			}
+		}));
+
+		this.plugin.registerEvent(this.plugin.app.vault.on("rename", async (file: TAbstractFile, oldPath) => {
+			// TODO Update relational links pointing to this file.
+			console.log(`File renamed from ${oldPath} to ${file.path}`);
+		}));
+	}
 
 	public async attachTagListeners(container: HTMLElement) {
 		container.querySelectorAll('.relational-links-tag').forEach((element: HTMLElement) => {
