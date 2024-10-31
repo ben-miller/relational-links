@@ -52,24 +52,14 @@ export default class RelationalLinksPlugin extends Plugin {
 		}
 	}
 
-	async initLeafChangeEvents() {
-		this.registerEvent(
-			this.app.workspace.on('active-leaf-change', (leaf) => {
-				this.handleActiveLeafChange(leaf);
-			})
-		);
-		await this.handleActiveLeafChange(this.app.workspace.getLeaf());
-	}
-
 	async onload() {
 		console.log('Loading plugin...');
+		loadRlMarkdownPlugin(this);
 		RelationalTagSuggest.load(this);
 		RelationalLinkSuggest.load(this);
 		await VaultScanner.load(this);
 		await RLAppController.load(this, this.vaultScanner);
-		loadRlMarkdownPlugin(this);
 		await RLTagExplorerView.load(this, this.vaultScanner);
-		await this.initLeafChangeEvents();
 		console.log('Plugin loaded.');
 	}
 

@@ -27,6 +27,13 @@ export class RLAppController {
 			// TODO Update relational links pointing to this file.
 			console.log(`File renamed from ${oldPath} to ${file.path}`);
 		}));
+
+		this.plugin.registerEvent(
+			this.plugin.app.workspace.on('active-leaf-change', (leaf) => {
+				this.plugin.handleActiveLeafChange(leaf);
+			})
+		);
+		await this.plugin.handleActiveLeafChange(this.plugin.app.workspace.getLeaf());
 	}
 
 	public async attachTagListeners(container: HTMLElement) {
