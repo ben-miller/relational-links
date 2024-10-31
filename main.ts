@@ -10,7 +10,7 @@ export default class RelationalLinksPlugin extends Plugin {
 	public relationalTagSuggest: RelationalTagSuggest | null = null;
 	public relationalLinkSuggest: RelationalLinkSuggest | null = null;
 	private state: RLPluginState = new RLPluginState();
-	private rlEditorController: RLEditorController = new RLEditorController(this);
+	private rlEditorController: RLEditorController = new RLEditorController(this, this.state);
 	private vaultScanner: VaultScanner | null = null;
 
 	loadEditorSuggests() {
@@ -63,20 +63,16 @@ export default class RelationalLinksPlugin extends Plugin {
 	}
 
 	public async openTagExplorerView(tag = "") {
-		console.log("opening sidebar view with tag:", tag);
 		this.state.searchTag = tag;
 
-		// Check if the sidebar view is already open
 		const existingLeaf = this.app.workspace.getLeavesOfType(rlSidebarViewId)[0];
 
 		if (!existingLeaf) {
-			// Sidebar view is not open, so open it
 			const leftLeaf = this.app.workspace.getLeftLeaf(false);
 			if (leftLeaf) {
 				await leftLeaf.setViewState({ type: rlSidebarViewId });
 			}
 		} else {
-			// If the sidebar is already open, you could bring it into focus
 			await this.app.workspace.revealLeaf(existingLeaf);
 		}
 	}

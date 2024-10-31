@@ -1,19 +1,25 @@
 import RelationalLinksPlugin from "../main";
 import {MarkdownPostProcessorContext, TFile, Vault} from "obsidian";
+import {RLPluginState} from "./RLPluginState";
 
 export class RLEditorController {
 	private listenerMap: WeakMap<HTMLElement, EventListener> = new WeakMap();
-	private plugin: RelationalLinksPlugin;
 
-	constructor(plugin: RelationalLinksPlugin) {
-		this.plugin = plugin;
-	}
+	constructor(
+		private plugin: RelationalLinksPlugin,
+		private pluginState: RLPluginState
+	) {}
 
 	public async attachTagListeners(container: HTMLElement) {
 		container.querySelectorAll('.relational-links-tag').forEach((element: HTMLElement) => {
 			const listener = (event: Event) => {
 				const tag = (event.currentTarget as HTMLElement).getAttribute("href")?.substring(1);
-				this.plugin.openTagExplorerView(tag);
+				if (tag) {
+					this.pluginState.searchTag = tag;
+					this.plugin.openTagExplorerView(tag);
+				} else {
+					throw Error('Unknown tag');
+				}
 			};
 
 			element.addEventListener("click", listener);

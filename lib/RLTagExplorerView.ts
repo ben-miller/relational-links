@@ -11,6 +11,11 @@ export class RLTagExplorerView extends ItemView {
 		private vaultScanner: VaultScanner
 	) {
 		super(leaf);
+		this.registerEvent(this.app.workspace.on('active-leaf-change', async (leaf) => {
+			if (leaf === this.leaf) {
+				await this.renderContent();
+			}
+		}));
 	}
 
 	// Unique identifier for the view type
@@ -28,8 +33,12 @@ export class RLTagExplorerView extends ItemView {
 		return "star";
 	}
 
-	// Render the view content
 	async onOpen() {
+		await this.renderContent();
+	}
+
+	// Render the view content
+	private async renderContent() {
 		console.log("Opening tax explorer with search tag:", this.state.searchTag);
 
 		const container = this.containerEl.children[1];
