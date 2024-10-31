@@ -1,4 +1,4 @@
-import {Plugin, WorkspaceLeaf} from "obsidian";
+import {Plugin} from "obsidian";
 import {RelationalTagSuggest} from "./lib/suggest/RelationalTagSuggest";
 import {RelationalLinkSuggest} from "./lib/suggest/RelationalLinkSuggest";
 import {rlSidebarViewId, RLTagExplorerView} from "./lib/RLTagExplorerView";
@@ -11,7 +11,6 @@ export default class RelationalLinksPlugin extends Plugin {
 	public relationalTagSuggest: RelationalTagSuggest | null = null;
 	public relationalLinkSuggest: RelationalLinkSuggest | null = null;
 	public state: RLPluginState = new RLPluginState();
-	public rlAppController: RLAppController;
 	public linkIndex: LinkIndex;
 
 	public async openTagExplorerView(tag = "") {
@@ -26,29 +25,6 @@ export default class RelationalLinksPlugin extends Plugin {
 			}
 		} else {
 			await this.app.workspace.revealLeaf(existingLeaf);
-		}
-	}
-
-	async attachListeners(leaf: WorkspaceLeaf) {
-		await this.rlAppController.attachTagListeners(leaf.view.containerEl);
-	}
-
-	detachListeners(leaf: WorkspaceLeaf) {
-		this.rlAppController.detachTagListeners(leaf.view.containerEl);
-	}
-
-	async handleActiveLeafChange(leaf: WorkspaceLeaf | null) {
-		// If there's a previously active leaf, detach its listeners
-		if (this.state.currentActiveLeaf) {
-			this.detachListeners(this.state.currentActiveLeaf);
-		}
-
-		// Set the new active leaf
-		this.state.currentActiveLeaf = leaf;
-
-		// Attach listeners to the new active leaf if it exists
-		if (leaf) {
-			await this.attachListeners(leaf);
 		}
 	}
 

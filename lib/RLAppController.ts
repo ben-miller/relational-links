@@ -1,5 +1,5 @@
 import RelationalLinksPlugin from "../main";
-import {TAbstractFile, TFile} from "obsidian";
+import {TAbstractFile, TFile, WorkspaceLeaf} from "obsidian";
 import {RLPluginState} from "./RLPluginState";
 import {LinkIndex} from "./LinkIndex";
 
@@ -12,8 +12,8 @@ export class RLAppController {
 	) {}
 
 	static async load(plugin: RelationalLinksPlugin, vaultScanner: LinkIndex) {
-		plugin.rlAppController = new RLAppController(plugin, plugin.state);
-		await plugin.rlAppController.init(vaultScanner);
+		const rlAppController = new RLAppController(plugin, plugin.state);
+		await rlAppController.init(vaultScanner);
 	}
 
 	async init(vaultScanner: LinkIndex) {
@@ -30,10 +30,18 @@ export class RLAppController {
 
 		this.plugin.registerEvent(
 			this.plugin.app.workspace.on('active-leaf-change', (leaf) => {
-				this.plugin.handleActiveLeafChange(leaf);
+				this.handleActiveLeafChange(leaf);
 			})
 		);
-		await this.plugin.handleActiveLeafChange(this.plugin.app.workspace.getLeaf());
+		await this.handleActiveLeafChange(this.plugin.app.workspace.getLeaf());
+	}
+
+	async attachListeners(leaf: WorkspaceLeaf) {
+		await this.attachTagListeners(leaf.view.containerEl);
+	}
+
+	detachListeners(leaf: WorkspaceLeaf) {
+		this.detachTagListeners(leaf.view.containerEl);
 	}
 
 	public async attachTagListeners(container: HTMLElement) {
@@ -51,6 +59,21 @@ export class RLAppController {
 			element.addEventListener("click", listener);
 			this.listenerMap.set(element, listener);
 		});
+	}
+
+	async handleActiveLeafChange(leaf: WorkspaceLeaf | null) {
+		// If there's a previously active leaf, detach its listeners
+		if (this.plugin.state.currentActiveLeaf) {
+			this.detachListeners(this.plugin.state.currentActiveLeaf);
+		}
+
+		// Set the new active leaf
+		this.plugin.state.currentActiveLeaf = leaf;
+
+		// Attach listeners to the new active leaf if it exists
+		if (leaf) {
+			await this.attachListeners(leaf);
+		}
 	}
 
 	public detachTagListeners(container: HTMLElement) {
