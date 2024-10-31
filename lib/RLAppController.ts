@@ -3,7 +3,7 @@ import {MarkdownPostProcessorContext, TAbstractFile, TFile, Vault} from "obsidia
 import {RLPluginState} from "./RLPluginState";
 import {VaultScanner} from "./VaultScanner";
 
-export class RLEditorController {
+export class RLAppController {
 	private listenerMap: WeakMap<HTMLElement, EventListener> = new WeakMap();
 
 	constructor(
@@ -12,8 +12,8 @@ export class RLEditorController {
 	) {}
 
 	static async load(plugin: RelationalLinksPlugin, vaultScanner: VaultScanner) {
-		plugin.rlEditorController = new RLEditorController(plugin, plugin.state);
-		await plugin.rlEditorController.initParserEvents(vaultScanner);
+		plugin.rlAppController = new RLAppController(plugin, plugin.state);
+		await plugin.rlAppController.initParserEvents(vaultScanner);
 	}
 
 	async initParserEvents(vaultScanner: VaultScanner) {

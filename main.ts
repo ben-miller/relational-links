@@ -2,7 +2,7 @@ import {Plugin, WorkspaceLeaf} from "obsidian";
 import {RelationalTagSuggest} from "./lib/suggest/RelationalTagSuggest";
 import {RelationalLinkSuggest} from "./lib/suggest/RelationalLinkSuggest";
 import {rlSidebarViewId, RLTagExplorerView} from "./lib/RLTagExplorerView";
-import {RLEditorController} from "./lib/RLEditorController";
+import {RLAppController} from "./lib/RLAppController";
 import {RLPluginState} from "./lib/RLPluginState";
 import {VaultScanner} from "./lib/VaultScanner";
 import {loadRlMarkdownPlugin} from "./lib/markdown-it/rlMarkdownPlugin";
@@ -11,7 +11,7 @@ export default class RelationalLinksPlugin extends Plugin {
 	public relationalTagSuggest: RelationalTagSuggest | null = null;
 	public relationalLinkSuggest: RelationalLinkSuggest | null = null;
 	public state: RLPluginState = new RLPluginState();
-	public rlEditorController: RLEditorController;
+	public rlAppController: RLAppController;
 	public vaultScanner: VaultScanner;
 
 	public async openTagExplorerView(tag = "") {
@@ -30,11 +30,11 @@ export default class RelationalLinksPlugin extends Plugin {
 	}
 
 	async attachListeners(leaf: WorkspaceLeaf) {
-		await this.rlEditorController.attachTagListeners(leaf.view.containerEl);
+		await this.rlAppController.attachTagListeners(leaf.view.containerEl);
 	}
 
 	detachListeners(leaf: WorkspaceLeaf) {
-		this.rlEditorController.detachTagListeners(leaf.view.containerEl);
+		this.rlAppController.detachTagListeners(leaf.view.containerEl);
 	}
 
 	async handleActiveLeafChange(leaf: WorkspaceLeaf | null) {
@@ -66,7 +66,7 @@ export default class RelationalLinksPlugin extends Plugin {
 		RelationalTagSuggest.load(this);
 		RelationalLinkSuggest.load(this);
 		await VaultScanner.load(this);
-		await RLEditorController.load(this, this.vaultScanner);
+		await RLAppController.load(this, this.vaultScanner);
 		loadRlMarkdownPlugin(this);
 		await RLTagExplorerView.load(this, this.vaultScanner);
 		await this.initLeafChangeEvents();

@@ -3,7 +3,7 @@ import { StateInline, Token } from "markdown-it";
 import RelationalLinksPlugin from "../../main";
 
 export function loadRlMarkdownPlugin(plugin: RelationalLinksPlugin) {
-	const markdownPostProcessor = plugin.rlEditorController.rlMarkdownPostProcessor(plugin.app.vault);
+	const markdownPostProcessor = plugin.rlAppController.rlMarkdownPostProcessor(plugin.app.vault);
 	plugin.registerMarkdownPostProcessor(markdownPostProcessor);
 }
 
