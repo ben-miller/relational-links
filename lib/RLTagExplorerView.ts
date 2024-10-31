@@ -1,25 +1,23 @@
 import {ItemView, WorkspaceLeaf} from "obsidian";
-import {RLPluginState} from "./RLPluginState";
 import {LinkIndex} from "./LinkIndex";
 import RelationalLinksPlugin from "../main";
-import {RLAppController} from "./RLAppController";
 
 export const rlSidebarViewId = "relational-links-sidebar-view";
 
 export class RLTagExplorerView extends ItemView {
 	constructor(
 		leaf: WorkspaceLeaf,
-		private state: RLPluginState,
+		private plugin: RelationalLinksPlugin,
 		private linkIndex: LinkIndex
 	) {
 		super(leaf);
 	}
 
-	static async load(plugin: RelationalLinksPlugin, linkIndex: LinkIndex, appController: RLAppController) {
+	static async load(plugin: RelationalLinksPlugin, linkIndex: LinkIndex): Promise<RLTagExplorerView> {
 		// Register the sidebar view when the plugin loads
 		plugin.registerView(
 			rlSidebarViewId,
-			(leaf) => new RLTagExplorerView(leaf, plugin.state, linkIndex)
+			(leaf) => new RLTagExplorerView(leaf, plugin, linkIndex)
 		);
 
 		// Add a ribbon icon to toggle the view
@@ -27,7 +25,27 @@ export class RLTagExplorerView extends ItemView {
 			console.log("Ribbon clicked")
 		});
 
-		await appController.openTagExplorerView();
+		const leaf = plugin.app.workspace.getLeftLeaf(false)!;
+		await leaf.setViewState({ type: rlSidebarViewId });
+		const view = leaf.view as RLTagExplorerView;
+		await view.openTagExplorerView();
+
+		return Promise.resolve(view);
+	}
+
+	public async openTagExplorerView(tag = "") {
+		this.plugin.state.searchTag = tag;
+
+		const existingLeaf = this.plugin.app.workspace.getLeavesOfType(rlSidebarViewId)[0];
+
+		if (!existingLeaf) {
+			const leftLeaf = this.plugin.app.workspace.getLeftLeaf(false);
+			if (leftLeaf) {
+				await leftLeaf.setViewState({ type: rlSidebarViewId });
+			}
+		} else {
+			await this.plugin.app.workspace.revealLeaf(existingLeaf);
+		}
 	}
 
 	// Unique identifier for the view type
@@ -57,7 +75,7 @@ export class RLTagExplorerView extends ItemView {
 
 	// Render the view content
 	private async renderContent() {
-		console.log("Rendering tax explorer with search tag:", this.state.searchTag);
+		console.log("Rendering tax explorer with search tag:", this.plugin.state.searchTag);
 
 		const container = this.containerEl.children[1];
 		container.empty();
@@ -69,7 +87,7 @@ export class RLTagExplorerView extends ItemView {
 		// Main container to hold all search results
 		const resultsContainer = container.createEl("div", { cls: "search-results-children" });
 
-		const searchResults = await this.linkIndex.searchTag(this.state.searchTag);
+		const searchResults = await this.linkIndex.searchTag(this.plugin.state.searchTag);
 		searchResults.forEach(result => {
 			const resultItem = resultsContainer.createEl("div", { cls: "tree-item search-result", attr: { draggable: "true" } });
 			const itemSelf = resultItem.createEl("div", { cls: "tree-item-self search-result-file-title is-clickable" });
