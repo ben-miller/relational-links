@@ -10,8 +10,8 @@ import {loadRlMarkdownPlugin} from "./lib/markdown-it/rlMarkdownPlugin";
 export default class RelationalLinksPlugin extends Plugin {
 	public relationalTagSuggest: RelationalTagSuggest | null = null;
 	public relationalLinkSuggest: RelationalLinkSuggest | null = null;
+	public linkIndex: LinkIndex | null = null;
 	public state: RLPluginState = new RLPluginState();
-	public linkIndex: LinkIndex;
 
 	async onload() {
 		console.log('Loading plugin...');
@@ -19,7 +19,7 @@ export default class RelationalLinksPlugin extends Plugin {
 		RelationalTagSuggest.load(this);
 		RelationalLinkSuggest.load(this);
 		await LinkIndex.load(this);
-		const explorerView = await RLTagExplorerView.load(this, this.linkIndex);
+		const explorerView = await RLTagExplorerView.load(this, this.linkIndex!);
 		await RLAppController.load(this, explorerView);
 		console.log('Plugin loaded.');
 	}

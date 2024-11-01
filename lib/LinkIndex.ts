@@ -30,7 +30,7 @@ export class LinkIndex {
 
 		plugin.registerEvent(plugin.app.vault.on("modify", async (file: TAbstractFile) => {
 			if (file instanceof TFile) {
-				await plugin.linkIndex.loadTagsInFile(file);
+				await plugin.linkIndex!.loadTagsInFile(file);
 			}
 		}));
 
@@ -47,12 +47,19 @@ export class LinkIndex {
 			.filter((token) => token.type === 'relational_link')
 			.forEach((token) => {
 				const tag = token.children![0].content;
-				const linkString = `#[${tag}[${file.basename}]]`;
+
+				const toFileStr = token.children![1].content;
+				const toFile = this.vault.getFileByPath(toFileStr);
+
+				// File's path if file exists, otherwise original field value
+				const toFileOrOrig = toFile ? toFile.path : toFileStr;
+
+				const linkString = `#[${tag}[${toFileOrOrig}]]`;
 				const link: RelationalLink = {
 					tag: tag,
 					fromTitle: file.basename,
 					fromFile: file.path,
-					toFile: "notes/processes/Project Management Process.md",
+					toFile: toFileOrOrig,
 					contextLine: linkString,
 					lineLocation: { start: 0, end: linkString.length }
 				}
@@ -62,14 +69,16 @@ export class LinkIndex {
 	}
 
 	async scanVault() {
+		console.log("LinkIndex: Scanning vault...");
 		const markdownFiles = this.vault.getMarkdownFiles();
 		for (const file of markdownFiles) {
 			await this.loadTagsInFile(file);
 		}
+		console.log("LinkIndex: Scanning vault finished.");
 	}
 
 	public async searchTag(tag: string): Promise<RelationalLink[]> {
-		const results = Array.from(this.linkSet).filter(link => link.tag === tag);
+		const results = this.links().filter(link => link.tag === tag);
 		return Promise.resolve(results);
 	}
 }
