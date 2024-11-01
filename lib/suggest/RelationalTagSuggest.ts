@@ -2,14 +2,19 @@ import {App, Editor, EditorPosition, EditorSuggestContext, EditorSuggestTriggerI
 import {RLEditorSuggest} from "./RLEditorSuggest";
 import {RLPluginState} from "../RLPluginState";
 import RelationalLinksPlugin from "../../main";
+import {LinkIndex} from "../LinkIndex";
 
 export class RelationalTagSuggest extends RLEditorSuggest<string> {
-	constructor(app: App, private pluginState: RLPluginState) {
+	constructor(
+		app: App,
+		private pluginState: RLPluginState,
+		private linkIndex: LinkIndex
+	) {
 		super(app);
 	}
 
-	static load(plugin: RelationalLinksPlugin) {
-		plugin.relationalTagSuggest = new RelationalTagSuggest(plugin.app, plugin.state);
+	static load(plugin: RelationalLinksPlugin, linkIndex: LinkIndex) {
+		plugin.relationalTagSuggest = new RelationalTagSuggest(plugin.app, plugin.state, linkIndex);
 		plugin.registerEditorSuggest(plugin.relationalTagSuggest);
 	}
 
@@ -35,8 +40,7 @@ export class RelationalTagSuggest extends RLEditorSuggest<string> {
 	}
 
 	getSuggestions(context: EditorSuggestContext): string[] {
-		const suggestions = this.pluginState.linkIndex!.links()
-			.map(link => link.tag)
+		const suggestions = this.linkIndex.tags()
 			.filter(tag =>
 				tag.toLowerCase().includes(context.query.toLowerCase())
 			);

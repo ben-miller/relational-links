@@ -16,9 +16,9 @@ export default class RelationalLinksPlugin extends Plugin {
 	async onload() {
 		console.log('Loading plugin...');
 		loadRlMarkdownPlugin(this);
-		RelationalTagSuggest.load(this);
+		const linkIndex = await LinkIndex.load(this);
+		RelationalTagSuggest.load(this, linkIndex);
 		RelationalLinkSuggest.load(this);
-		await LinkIndex.load(this);
 		const explorerView = await RLTagExplorerView.load(this, this.linkIndex!);
 		await RLAppController.load(this, explorerView);
 		console.log('Plugin loaded.');
