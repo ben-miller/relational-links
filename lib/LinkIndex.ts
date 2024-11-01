@@ -2,18 +2,10 @@ import {TAbstractFile, TFile, Vault} from "obsidian";
 import {getAllTokens, rlMarkdownPlugin} from "./markdown-it/rlMarkdownPlugin";
 import MarkdownIt from "markdown-it";
 import RelationalLinksPlugin from "../main";
+import {RelationalLink} from "./RelationalLink";
 
 const md = MarkdownIt()
 md.use(rlMarkdownPlugin)
-
-export interface RelationalLink {
-	tag: string;
-	fromTitle: string;
-	fromFile: string;
-	toFile: string;
-	contextLine: string;
-	lineLocation: { start: number; end: number }
-}
 
 export class LinkIndex {
 	// Keep association between file and its relational links.
