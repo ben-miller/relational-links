@@ -34,11 +34,13 @@ Since this plugin is not yet available on the official Obsidian Plugin Marketpla
 
 ## Usage
 
-With the Relational Links Plugin activated, you can start creating relational links in your notes using the format:
+Insert links anywhere into the note using the following syntax:
 
 ```
 #[relationship-name[linked-note]]
 ```
+
+Autocomplete suggestions will be offered for both the tag and the target note:
 
 ![Usage Example](./usage-example.gif)
 
