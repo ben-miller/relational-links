@@ -40,6 +40,8 @@ With the Relational Links Plugin activated, you can start creating relational li
 #[relationship-name[linked-note]]
 ```
 
+![Usage Example](./usage-example.gif)
+
 ### How to Use Relational Links
 
 1. **Define Relationships**: Place the relational tag anywhere in a note to establish a connection. For example:
