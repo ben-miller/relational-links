@@ -1,96 +1,89 @@
-# Obsidian Sample Plugin
+# Relational Links Plugin for Obsidian
 
-This is a sample plugin for Obsidian (https://obsidian.md).
+The **Relational Links Plugin** enriches your Obsidian notes by allowing you to create customizable, semantic relationships between notes using tag-like relational links. This plugin makes it easy to organize complex information networks by enabling unique, user-defined link types that go beyond traditional linking methods in Obsidian.
 
-This project uses TypeScript to provide type checking and documentation.
-The repo depends on the latest plugin API (obsidian.d.ts) in TypeScript Definition format, which contains TSDoc comments describing what it does.
+## Table of Contents
+- [Features](#features)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Example](#example)
+- [Contributing](#contributing)
+- [License](#license)
 
-**Note:** The Obsidian API is still in early alpha and is subject to change at any time!
+## Features
 
-This sample plugin demonstrates some of the basic functionality the plugin API can do.
-- Adds a ribbon icon, which shows a Notice when clicked.
-- Adds a command "Open Sample Modal" which opens a Modal.
-- Adds a plugin setting tab to the settings page.
-- Registers a global click event and output 'click' to the console.
-- Registers a global interval which logs 'setInterval' to the console.
+- **Flexible, Customizable Links**: Define any relationship you need by creating unique link tags on the fly. Each link name behaves like a tag, so you can name relationships based on your context (e.g., `#[influences[Note]]`, `#[depends-on[Note]]`, `#[clarifies[Note]]`).
+- **Autocomplete Support**: The plugin will autocomplete relational based on previously used link names. It will also autocomplete the target note's filename as if it were a regular link.
 
-## First time developing plugins?
+## Installation
 
-Quick starting guide for new plugin devs:
+Since this plugin is not yet available on the official Obsidian Plugin Marketplace, follow these steps to install it manually:
 
-- Check if [someone already developed a plugin for what you want](https://obsidian.md/plugins)! There might be an existing plugin similar enough that you can partner up with.
-- Make a copy of this repo as a template with the "Use this template" button (login to GitHub if you don't see it).
-- Clone your repo to a local development folder. For convenience, you can place this folder in your `.obsidian/plugins/your-plugin-name` folder.
-- Install NodeJS, then run `npm i` in the command line under your repo folder.
-- Run `npm run dev` to compile your plugin from `main.ts` to `main.js`.
-- Make changes to `main.ts` (or create new `.ts` files). Those changes should be automatically compiled into `main.js`.
-- Reload Obsidian to load the new version of your plugin.
-- Enable plugin in settings window.
-- For updates to the Obsidian API run `npm update` in the command line under your repo folder.
+1. **Download the Plugin**: Clone or download the repository from GitHub:
+    ```bash
+    git clone https://github.com/ben-miller/relational-links.git
+    ```
 
-## Releasing new releases
+2. **Locate Your Plugins Folder**: Typically this is in `<vault-dir>/.obsidian/plugins`.
 
-- Update your `manifest.json` with your new version number, such as `1.0.1`, and the minimum Obsidian version required for your latest release.
-- Update your `versions.json` file with `"new-plugin-version": "minimum-obsidian-version"` so older versions of Obsidian can download an older version of your plugin that's compatible.
-- Create new GitHub release using your new version number as the "Tag version". Use the exact version number, don't include a prefix `v`. See here for an example: https://github.com/obsidianmd/obsidian-sample-plugin/releases
-- Upload the files `manifest.json`, `main.js`, `styles.css` as binary attachments. Note: The manifest.json file must be in two places, first the root path of your repository and also in the release.
-- Publish the release.
+3. **Move the Plugin Folder**: Copy or move the downloaded folder (`relational-links`) into the `plugins` folder.
 
-> You can simplify the version bump process by running `npm version patch`, `npm version minor` or `npm version major` after updating `minAppVersion` manually in `manifest.json`.
-> The command will bump version in `manifest.json` and `package.json`, and add the entry for the new version to `versions.json`
+4. **Enable the Plugin**: In **Settings > Community Plugins**, activate **Relational Links Plugin**.
 
-## Adding your plugin to the community plugin list
+5. **Restart Obsidian**: For best results, restart Obsidian to ensure the plugin loads properly.
 
-- Check the [plugin guidelines](https://docs.obsidian.md/Plugins/Releasing/Plugin+guidelines).
-- Publish an initial version.
-- Make sure you have a `README.md` file in the root of your repo.
-- Make a pull request at https://github.com/obsidianmd/obsidian-releases to add your plugin.
+## Usage
 
-## How to use
+With the Relational Links Plugin activated, you can start creating relational links in your notes using the format:
 
-- Clone this repo.
-- Make sure your NodeJS is at least v16 (`node --version`).
-- `npm i` or `yarn` to install dependencies.
-- `npm run dev` to start compilation in watch mode.
-
-## Manually installing the plugin
-
-- Copy over `main.js`, `styles.css`, `manifest.json` to your vault `VaultFolder/.obsidian/plugins/your-plugin-id/`.
-
-## Improve code quality with eslint (optional)
-- [ESLint](https://eslint.org/) is a tool that analyzes your code to quickly find problems. You can run ESLint against your plugin to find common bugs and ways to improve your code. 
-- To use eslint with this project, make sure to install eslint from terminal:
-  - `npm install -g eslint`
-- To use eslint to analyze this project use this command:
-  - `eslint main.ts`
-  - eslint will then create a report with suggestions for code improvement by file and line number.
-- If your source code is in a folder, such as `src`, you can use eslint with this command to analyze all files in that folder:
-  - `eslint .\src\`
-
-## Funding URL
-
-You can include funding URLs where people who use your plugin can financially support it.
-
-The simple way is to set the `fundingUrl` field to your link in your `manifest.json` file:
-
-```json
-{
-    "fundingUrl": "https://buymeacoffee.com"
-}
+```
+#[relationship-name[linked-note]]
 ```
 
-If you have multiple URLs, you can also do:
+### How to Use Relational Links
 
-```json
-{
-    "fundingUrl": {
-        "Buy Me a Coffee": "https://buymeacoffee.com",
-        "GitHub Sponsor": "https://github.com/sponsors",
-        "Patreon": "https://www.patreon.com/"
-    }
-}
+1. **Define Relationships**: Place the relational tag anywhere in a note to establish a connection. For example:
+```
+#[is-example-of[Note Title]]
+#[depends-on[Research Notes]]
+#[supports[Project Overview]]
 ```
 
-## API Documentation
+2. **Autocomplete for Existing Links**: Start typing any relational link (e.g., `#[is-part-of`), and the plugin will offer autocomplete suggestions based on previously used link names. Then you'll be provided with a second autocomplete list for filling out the target note's filename.
 
-See https://github.com/obsidianmd/obsidian-api
+3. **Custom Relationships**: Create new relationship names as needed—just like tags, these names are flexible and based on your specific context and preference.
+
+### Viewing and Managing Links
+
+Currently, you can use Obsidian’s native search and backlink features to explore and manage the connections. Additional support for visualizing or filtering these relationships (if planned) will be outlined here in future updates.
+
+## Example
+
+Here are some ways you might use relational links:
+
+```
+#[influences[Theory of Relativity]]
+#[depends-on[Experimental Data/2023]]
+#[clarifies[Concepts/Quantum Mechanics]]
+#[supports[Project/Quantum Gravity Research]]
+```
+
+Each relational link can represent any type of connection you find valuable, enabling nuanced and specific organization of your vault.
+
+## Contributing
+
+We welcome contributions to improve the Relational Links Plugin! If you’d like to help enhance features, fix issues, or add new functionality, please:
+
+1. Fork the repository.
+2. Make your changes.
+3. Submit a pull request.
+
+Feel free to report bugs or suggest features in the GitHub Issues section.
+
+## License
+
+This plugin is licensed under the MIT License. See `LICENSE.md` for more information.
+
+---
+
+By using the Relational Links Plugin, you can transform your Obsidian vault into a more powerful and customizable knowledge graph. Enjoy creating meaningful connections!
