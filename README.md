@@ -72,7 +72,7 @@ Each relational link can represent any type of connection you find valuable, ena
 
 ## Contributing
 
-We welcome contributions to improve the Relational Links Plugin! If you’d like to help enhance features, fix issues, or add new functionality, please:
+We welcome contributions to improve the Relational Links Plugin. If you’d like to help enhance features, fix issues, or add new functionality, please:
 
 1. Fork the repository.
 2. Make your changes.
@@ -84,6 +84,3 @@ Feel free to report bugs or suggest features in the GitHub Issues section.
 
 This plugin is licensed under the MIT License. See `LICENSE.md` for more information.
 
----
-
-By using the Relational Links Plugin, you can transform your Obsidian vault into a more powerful and customizable knowledge graph. Enjoy creating meaningful connections!
